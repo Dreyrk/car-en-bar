@@ -1,86 +1,88 @@
-import { Resolver, Query, Mutation, Arg, Int } from "type-graphql";
-import { Carpool } from "../entities/Carpool/Carpool.entity";
+import { Resolver, Query, Mutation, Arg, Int, InputType, Field, Authorized } from 'type-graphql';
+import { Carpool } from '../../entities/Carpool/Carpool.entity';
+import { CarpoolService } from '../../services/Carpool/crud.service';
+import { GraphQLError } from 'graphql';
+import { getValidProperties } from '../../utils/getValidProperties';
+
+@InputType()
+class CarpoolInput {
+  @Field({ nullable: true })
+  departure_time?: Date;
+
+  @Field(() => Int, { nullable: true })
+  max_passengers?: number;
+
+  @Field({ nullable: true })
+  carpool_type?: string;
+
+  @Field(() => Int, { nullable: true })
+  departureId?: number;
+
+  @Field(() => Int, { nullable: true })
+  arrivalId?: number;
+
+  @Field(() => Int, { nullable: true })
+  carId?: number;
+}
 
 @Resolver()
 export class CarpoolResolver {
+  private carpoolService: CarpoolService;
+
+  constructor() {
+    this.carpoolService = new CarpoolService();
+  }
+
   @Query(() => [Carpool])
-  async carpools(): Promise<Carpool[]> {
-    return await Carpool.find();
+  async getAllCarpools(): Promise<Carpool[]> {
+    try {
+      return await this.carpoolService.getAll();
+    } catch (e) {
+      throw new GraphQLError(`Cannot get all Carpools: ${(e as Error).message}`);
+    }
   }
 
   @Query(() => Carpool, { nullable: true })
-  async carpool(
-    @Arg("id", () => Int) id: number,
-  ): Promise<Carpool | undefined> {
-    return await Carpool.findOne(id);
+  async getCarpoolById(@Arg('id', () => Int) id: number): Promise<Carpool | null> {
+    try {
+      return await this.carpoolService.getById(id);
+    } catch (e) {
+      throw new GraphQLError(`Cannot get Carpool n°${id}: ${(e as Error).message}`);
+    }
   }
 
+  @Authorized()
   @Mutation(() => Carpool)
-  async createCarpool(
-    @Arg("departureCity") departureCity: string,
-    @Arg("arrivalCity") arrivalCity: string,
-    @Arg("departureTime") departureTime: Date,
-    @Arg("maxPassengers", () => Int) maxPassengers: number,
-    @Arg("departureLat", { nullable: true }) departureLat?: number,
-    @Arg("departureLng", { nullable: true }) departureLng?: number,
-    @Arg("arrivalLat", { nullable: true }) arrivalLat?: number,
-    @Arg("arrivalLng", { nullable: true }) arrivalLng?: number,
-    @Arg("carpoolType") carpoolType: string,
-    @Arg("carId", () => Int) carId: number,
-  ): Promise<Carpool> {
-    const carpool = Carpool.create({
-      departureCity,
-      arrivalCity,
-      departureTime,
-      maxPassengers,
-      departureLat,
-      departureLng,
-      arrivalLat,
-      arrivalLng,
-      carpoolType,
-      car: { id: carId },
-    });
-    await carpool.save();
-    return carpool;
+  async createCarpool(@Arg('carpool') carpool: CarpoolInput): Promise<Carpool> {
+    try {
+      const newCarpool = getValidProperties(carpool);
+      return await this.carpoolService.create(newCarpool);
+    } catch (e) {
+      throw new GraphQLError(`Cannot create Carpool: ${(e as Error).message}`);
+    }
   }
 
+  @Authorized()
   @Mutation(() => Carpool, { nullable: true })
   async updateCarpool(
-    @Arg("id", () => Int) id: number,
-    @Arg("departureCity", { nullable: true }) departureCity?: string,
-    @Arg("arrivalCity", { nullable: true }) arrivalCity?: string,
-    @Arg("departureTime", { nullable: true }) departureTime?: Date,
-    @Arg("maxPassengers", { nullable: true }) maxPassengers?: number,
-    @Arg("departureLat", { nullable: true }) departureLat?: number,
-    @Arg("departureLng", { nullable: true }) departureLng?: number,
-    @Arg("arrivalLat", { nullable: true }) arrivalLat?: number,
-    @Arg("arrivalLng", { nullable: true }) arrivalLng?: number,
-    @Arg("carpoolType", { nullable: true }) carpoolType?: string,
-    @Arg("carId", { nullable: true }) carId?: number,
+    @Arg('id', () => Int) id: number,
+    @Arg('updatedCarpool') updatedCarpool: CarpoolInput,
   ): Promise<Carpool | null> {
-    const carpool = await Carpool.findOne(id);
-    if (!carpool) {
-      return null;
+    try {
+      const carpoolData: Partial<Carpool> = getValidProperties(updatedCarpool);
+      return await this.carpoolService.update(id, carpoolData);
+    } catch (e) {
+      throw new GraphQLError(`Cannot update Carpool n°${id}: ${(e as Error).message}`);
     }
-    if (departureCity) {
-      carpool.departureCity = departureCity;
-    }
-    if (arrivalCity) {
-      carpool.arrivalCity = arrivalCity;
-    }
-    // Add similar checks for other fields
-
-    await carpool.save();
-    return carpool;
   }
 
+  @Authorized()
   @Mutation(() => Boolean)
-  async deleteCarpool(@Arg("id", () => Int) id: number): Promise<boolean> {
-    const carpool = await Carpool.findOne(id);
-    if (!carpool) {
-      throw new Error(`Carpool with id ${id} not found`);
+  async deleteCarpool(@Arg('id', () => Int) id: number): Promise<boolean> {
+    try {
+      return await this.carpoolService.delete(id);
+    } catch (e) {
+      throw new GraphQLError(`Cannot delete Carpool n°${id}: ${(e as Error).message}`);
     }
-    await carpool.remove();
-    return true;
   }
 }

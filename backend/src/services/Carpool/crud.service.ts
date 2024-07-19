@@ -1,34 +1,38 @@
-import { InputType, Field, Int, Float } from "type-graphql";
+import { Repository } from 'typeorm';
+import db from '../../db';
+import { Carpool } from '../../entities/Carpool/Carpool.entity';
 
-@InputType()
-export class CarpoolInput {
-  @Field()
-  departureCity: string;
+export class CarpoolService {
+  private db: Repository<Carpool>;
 
-  @Field()
-  arrivalCity: string;
+  constructor() {
+    this.db = db.getRepository(Carpool);
+  }
 
-  @Field()
-  departureTime: Date;
+  async getAll(): Promise<Carpool[]> {
+    return await this.db.find();
+  }
 
-  @Field(() => Int)
-  maxPassengers: number;
+  async getById(id: number): Promise<Carpool | null> {
+    return await this.db.findOneBy({ id });
+  }
 
-  @Field(() => Float, { nullable: true })
-  departureLat: number;
+  async create(carpoolData: Partial<Carpool>): Promise<Carpool> {
+    const carpool = this.db.create(carpoolData);
+    return await this.db.save(carpool);
+  }
 
-  @Field(() => Float, { nullable: true })
-  departureLng: number;
+  async update(id: number, carpoolData: Partial<Carpool>): Promise<Carpool | null> {
+    const carpool = await this.db.findOneBy({ id });
+    if (!carpool) {
+      return null;
+    }
+    Object.assign(carpool, carpoolData);
+    return await this.db.save(carpool);
+  }
 
-  @Field(() => Float, { nullable: true })
-  arrivalLat?: number;
-
-  @Field(() => Float, { nullable: true })
-  arrivalLng?: number;
-
-  @Field()
-  carpoolType: string;
-
-  @Field(() => Int)
-  carId: number;
+  async delete(id: number): Promise<boolean> {
+    const result = await this.db.delete(id);
+    return result.affected !== 0;
+  }
 }
