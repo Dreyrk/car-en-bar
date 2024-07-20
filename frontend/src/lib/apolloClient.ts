@@ -1,5 +1,5 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
-import getURI from "../../utils/getURI";
+import getURI from "../utils/getURI";
 
 const link = createHttpLink({
   uri: getURI(),
