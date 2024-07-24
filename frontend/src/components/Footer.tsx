@@ -14,37 +14,37 @@ export default function Footer() {
         </div>
         <div className="grid gap-2">
           <h4 className="font-semibold">Product</h4>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/" className="text-sm hover:underline">
             Features
           </Link>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/" className="text-sm hover:underline">
             Pricing
           </Link>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/" className="text-sm hover:underline">
             Integrations
           </Link>
         </div>
         <div className="grid gap-2">
           <h4 className="font-semibold">Company</h4>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/about" className="text-sm hover:underline">
             About
           </Link>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/" className="text-sm hover:underline">
             Blog
           </Link>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/" className="text-sm hover:underline">
             Careers
           </Link>
         </div>
         <div className="grid gap-2">
           <h4 className="font-semibold">Support</h4>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/contact" className="text-sm hover:underline">
             Help Center
           </Link>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/contact" className="text-sm hover:underline">
             Contact Us
           </Link>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/documents" className="text-sm hover:underline">
             Documentation
           </Link>
         </div>
@@ -52,10 +52,10 @@ export default function Footer() {
       <div className="container max-w-7xl mt-8 flex flex-col sm:flex-row items-center justify-between">
         <p className="text-sm text-muted-foreground">&copy; 2024 Car-en-bar Inc. All rights reserved.</p>
         <div className="flex gap-4 mt-4 sm:mt-0">
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/documents" className="text-sm hover:underline">
             Privacy Policy
           </Link>
-          <Link href="#" className="text-sm hover:underline">
+          <Link href="/documents" className="text-sm hover:underline">
             Terms of Service
           </Link>
         </div>

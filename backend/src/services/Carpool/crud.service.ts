@@ -16,7 +16,10 @@ export class CarpoolService {
   }
 
   async getById(id: number): Promise<Carpool | null> {
-    return await this.db.findOneBy({ id });
+    return await this.db.findOne({
+      where: { id },
+      relations: ['departure', 'arrival', 'car', 'car.owner', 'participants', 'participants.user'],
+    });
   }
 
   async create(carpoolData: Partial<Carpool>): Promise<Carpool> {

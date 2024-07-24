@@ -16,6 +16,7 @@ const config = {
       colors: {
         "custom-gray": "var(--custom-gray)",
         ghost: "var(--ghost)",
+        time: "var(--time)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -71,6 +72,7 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "bounce-left": "bounce-left 1s infinite",
       },
     },
   },

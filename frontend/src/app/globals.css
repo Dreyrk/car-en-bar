@@ -5,6 +5,7 @@
 @layer base {
   :root {
     --custom-gray: #9ab3b8;
+    --time: #054652;
     --ghost: #6f8b90;
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -67,5 +68,25 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+main {
+  @apply min-h-[70dvh] px-4;
+}
+
+time {
+  @apply font-semibold text-time;
+}
+
+@keyframes bounce-left {
+  0%,
+  100% {
+    transform: translateX(25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
 }

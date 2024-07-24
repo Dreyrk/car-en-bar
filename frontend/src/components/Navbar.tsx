@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -9,9 +11,24 @@ import {
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Car } from "lucide-react";
+import { useGetProfileQuery, useLogoutMutation } from "@/graphql/generated/schema";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Navbar() {
-  const currentProfile = false;
+  const router = useRouter();
+  const { data, loading, error } = useGetProfileQuery();
+  const [logout] = useLogoutMutation();
+  const currentProfile = !!data?.getProfile.id;
+
+  const signOut = async () => {
+    const { data, errors } = await logout();
+    if (data?.logout.success && !errors) {
+      router.push("/");
+    } else {
+      toast.error(`Cannot sign out: ${data?.logout.message}`);
+    }
+  };
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 md:px-8">
@@ -40,23 +57,23 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>
-                <Link href="/profile" className="flex items-center gap-2">
+                <Link href={`/profile/${data.getProfile.id}`} className="flex items-center gap-2">
                   <div className="h-4 w-4" />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href="/profile/id/settings" className="flex items-center gap-2">
+                <Link href={`/profile/${data.getProfile.id}/settings`} className="flex items-center gap-2">
                   <div className="h-4 w-4" />
                   <span>Settings</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Link href="/" className="flex items-center gap-2">
+                <Button onClick={signOut} className="flex items-center gap-2">
                   <div className="h-4 w-4" />
                   <span>Sign out</span>
-                </Link>
+                </Button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

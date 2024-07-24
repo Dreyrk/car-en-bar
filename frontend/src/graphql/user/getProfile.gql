@@ -1,0 +1,47 @@
+query GetProfile {
+  getProfile {
+    id
+    username
+    email
+    password
+    role
+    created_at
+    updated_at
+    cars {
+      id
+      owner {
+        username
+      }
+    }
+    carpools {
+      participant_type
+      user {
+        username
+        id
+      }
+    }
+    previousCarpools {
+      id
+      rating
+      user {
+        username
+      }
+      comment
+      carpool {
+        id
+        arrival {
+          address
+          city
+          country
+          postal_code
+        }
+        departure {
+          address
+          city
+          country
+          postal_code
+        }
+      }
+    }
+  }
+}

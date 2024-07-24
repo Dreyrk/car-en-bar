@@ -1,0 +1,35 @@
+query GetCarpoolById($id: Int!) {
+  getCarpoolById(id: $id) {
+    id
+    departure {
+      id
+      address
+      city
+      country
+      postal_code
+    }
+    arrival {
+      id
+      address
+      city
+      country
+      postal_code
+    }
+    departure_time
+    arrival_time
+    max_passengers
+    price
+    carpool_type
+    car {
+      id
+    }
+    participants {
+      id
+      user {
+        id
+        username
+      }
+      participant_type
+    }
+  }
+}

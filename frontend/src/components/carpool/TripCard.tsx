@@ -19,9 +19,13 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
         <div className="h-[65%] w-full flex justify-between">
           <div className="flex gap-4 h-full md:hidden">
             <div className="flex flex-col justify-between h-full">
-              <span className="text-lg font-semibold">{departure_time.time}</span>
+              <time dateTime={carpool.departure_time} className="text-lg font-semibold">
+                {departure_time.time}
+              </time>
               <span className="text-xs text-center font-semibold text-ghost">{travelTime}</span>
-              <span className="text-lg font-semibold">{arrival_time.time}</span>
+              <time dateTime={carpool.arrival_time} className="text-lg font-semibold">
+                {arrival_time.time}
+              </time>
             </div>
             <div className="px-1 pt-2 max-h-[72%]">
               <div className="w-3 h-3 rounded-full border border-neutral-700"></div>
@@ -41,7 +45,9 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
           </div>
           <div className="flex gap-4 h-full max-md:hidden">
             <div className="flex flex-col gap-2">
-              <span className="text-lg font-semibold">{departure_time.time}</span>
+              <time dateTime={carpool.departure_time} className="text-lg font-semibold">
+                {departure_time.time}
+              </time>
               <span className="text-lg font-semibold">{carpool.departure.city}</span>
               <WalkIndicator />
             </div>
@@ -50,7 +56,9 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
             </div>
             <div>
               <div className="flex flex-col gap-2">
-                <span className="text-lg font-semibold">{arrival_time.time}</span>
+                <time dateTime={carpool.arrival_time} className="text-lg font-semibold">
+                  {arrival_time.time}
+                </time>
                 <span className="text-lg font-semibold">{carpool.arrival.city}</span>
                 <WalkIndicator />
               </div>
@@ -79,7 +87,7 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
               width={20}
               height={20}
             />
-            <span className="text-xs text-ghost">{carpool.max_passengers} passengers max.</span>
+            <span className="text-xs font-semibold text-ghost">{carpool.max_passengers} passengers max.</span>
           </div>
         </div>
       </div>

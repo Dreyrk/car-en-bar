@@ -11,7 +11,7 @@ function formatDateTime(dateToConvert: string): FormattedDate {
   const hours = dateObj.getHours().toString().padStart(2, "0");
   const minutes = dateObj.getMinutes().toString().padStart(2, "0");
 
-  const formattedTime = `${hours}:${minutes}`;
+  const formattedTime = `${hours}h${minutes}min`;
 
   return {
     date: formattedDate,
