@@ -7,6 +7,10 @@ import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from "../ui/card";
+import { toast } from "sonner";
+import { useMutation } from "@apollo/client";
+import LOGIN from "@/graphql/auth/login";
+import { useRouter } from "next/navigation";
 
 const registerSchema = z.object({
   username: z
@@ -27,7 +31,13 @@ const loginSchema = z.object({
   }),
 });
 
-export default function LoginForm() {
+export default function LoginForm({
+  setAccountCreated,
+}: {
+  setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const router = useRouter();
+  const [login] = useMutation(LOGIN);
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -36,8 +46,27 @@ export default function LoginForm() {
     },
   });
 
-  const login = (user: z.infer<typeof loginSchema>) => {
-    console.log(user);
+  const onSubmit = async (user: z.infer<typeof loginSchema>) => {
+    try {
+      const res = await login({
+        variables: {
+          user: {
+            email: user.email,
+            password: user.password,
+          },
+        },
+      });
+
+      if (res.data && !res.errors) {
+        form.reset();
+        toast.success(res.data.message, {
+          description: new Date().toLocaleDateString("FR-fr"),
+        });
+        router.push("/");
+      }
+    } catch (err) {
+      console.error("Register error:", (err as Error).message);
+    }
   };
 
   return (
@@ -47,7 +76,7 @@ export default function LoginForm() {
         <CardDescription>Enter your email and password to access your account.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(login)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <FormField
               control={form.control}
@@ -76,8 +105,15 @@ export default function LoginForm() {
               )}
             />
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col">
             <Button type="submit">Login</Button>
+            <Button
+              onClick={() => setAccountCreated(false)}
+              variant={"link"}
+              className="text-xs font-semibold text-gray-500"
+              type="button">
+              Not registered yet ? Create account.
+            </Button>
           </CardFooter>
         </form>
       </Form>

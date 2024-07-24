@@ -1,14 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { User } from "./User.entity";
-import { Field, Int } from "type-graphql";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, BaseEntity } from 'typeorm';
+import { User } from './User.entity';
+import { Field, Int, ObjectType } from 'type-graphql';
 
+@ObjectType()
 @Entity()
-export class Car {
+export class Car extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field({ nullable: true })
+  @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.cars)
   owner?: User;
 

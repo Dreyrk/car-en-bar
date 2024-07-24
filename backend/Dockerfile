@@ -1,13 +1,20 @@
-# Dockerfile for Express backend
-FROM node:18-alpine
+FROM node:20.9.0-alpine3.17
 
 WORKDIR /app
 
+# Permet le hot reload
+RUN apk --no-cache add curl
+RUN apk add make g++ python3 git
+RUN npm i -g node-pre-gyp
+
 COPY package*.json ./
+
 RUN npm i
 
-COPY . .
+COPY ./.env ./.env
+COPY ./tsconfig.json ./tsconfig.json
+COPY ./src ./src
 
-EXPOSE 4000
 
-CMD ["npm", "start"]
+
+CMD npm start

@@ -1,11 +1,9 @@
-import LoginForm from "@/components/auth/LoginForm";
-import RegisterForm from "@/components/auth/RegisterForm";
+import Auth from "@/components/sections/Auth";
 
 export default function Page() {
   return (
-    <main>
-      <LoginForm />
-      <RegisterForm />
+    <main className="min-h-[80dvh] grid place-content-center">
+      <Auth />
     </main>
   );
 }

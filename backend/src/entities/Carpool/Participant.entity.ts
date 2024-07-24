@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, BaseEntity, Column } from "typeorm";
-import { User } from "../User.entity";
-import { Carpool } from "./Carpool.entity";
-import { Field, Int, ObjectType } from "type-graphql";
+import { Entity, PrimaryGeneratedColumn, ManyToOne, BaseEntity, Column } from 'typeorm';
+import { User } from '../User.entity';
+import { Carpool } from './Carpool.entity';
+import { Field, Int, ObjectType } from 'type-graphql';
 
 @ObjectType()
 @Entity()
@@ -18,7 +18,7 @@ export class Participant extends BaseEntity {
   @ManyToOne(() => Carpool)
   carpool: Carpool;
 
-  // participant_type: "driver" or "passenger"
-  @Column({ type: "enum", enum: ["driver", "passenger"] })
+  @Field(() => String)
+  @Column({ type: 'enum', enum: ['driver', 'passenger'] })
   participant_type: string;
 }

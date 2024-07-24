@@ -1,14 +1,17 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
 import getURI from "../utils/getURI";
 
-const link = createHttpLink({
-  uri: getURI(),
-  credentials: "same-origin",
+const API_URL = getURI();
+
+const httpLink = createHttpLink({
+  uri: API_URL,
+  credentials: "include",
 });
 
 const client = new ApolloClient({
+  link: httpLink,
+  credentials: "include",
   cache: new InMemoryCache(),
-  link,
 });
 
 export default client;

@@ -15,6 +15,7 @@ const config = {
     extend: {
       colors: {
         "custom-gray": "var(--custom-gray)",
+        ghost: "var(--ghost)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

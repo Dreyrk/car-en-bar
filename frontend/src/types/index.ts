@@ -1,13 +1,24 @@
 export type CarpoolType = {
   id: number;
-  departure: string;
-  arrival: string;
+  departure: Position;
+  arrival: Position;
   departure_time: string;
   arrival_time: string;
   max_passengers: number;
-  participants: Participant[];
-  car: Car;
   price: number;
+  carpool_type: "offer" | "request";
+  car: Car;
+  participants: Participant[];
+};
+
+export type Position = {
+  id: number;
+  address: string;
+  city: string;
+  postal_code: string;
+  country: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type Car = {
@@ -23,6 +34,7 @@ export type Participant = {
   id: number;
   user: UserType;
   carpool: CarpoolType;
+  participant_type: "driver" | "passenger";
 };
 
 export type UserType = {

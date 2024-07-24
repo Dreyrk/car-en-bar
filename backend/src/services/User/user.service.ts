@@ -1,7 +1,7 @@
-import { Column, Repository } from "typeorm";
-import db from "../../db";
-import { User } from "../../entities/User.entity";
-import { Field, InputType, ObjectType } from "type-graphql";
+import { Column, Repository } from 'typeorm';
+import db from '../../db';
+import { User } from '../../entities/User.entity';
+import { Field, InputType, ObjectType } from 'type-graphql';
 
 export default class UserService {
   db: Repository<User>;
@@ -38,9 +38,8 @@ export default class UserService {
 
 @InputType()
 export class InputRegister {
-  @Field()
-  @Column()
-  username: string;
+  @Field({ nullable: true })
+  username?: string;
 
   @Field()
   email: string;

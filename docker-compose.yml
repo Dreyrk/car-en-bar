@@ -1,51 +1,52 @@
-name: car_en_bar_app
+name: dev_app
 
 version: "3.8"
 
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    environment:
-      - NEXT_PUBLIC_API_URL=http://backend:4000/graphql
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "4000:4000"
-    depends_on:
-      - db:
-          condition: service_healthy
-    environment:
-      - DATABASE_URL=postgres://postgres:password@db:5432/carenbar
-
   db:
+    stop_grace_period: 0s
     image: postgres:latest
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: carenbar
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=carenbar
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
       interval: 1s
       timeout: 5s
       retries: 10
     ports:
       - "5432:5432"
 
-  nginx:
-    image: nginx:alpine
+  frontend:
+    stop_grace_period: 0s
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL_PROD=http://backend:4000/
     depends_on:
-      - frontend
       - backend
+    volumes:
+      - ./frontend/src:/app/src
+
+  backend:
+    stop_grace_period: 0s
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_USER=postgres
+      - DB_PASS=password
+      - DB_PORT=5432
+      - DB_HOST=db
+      - DB_NAME=carenbar
+    volumes:
+      - ./backend/src:/app/src

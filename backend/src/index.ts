@@ -1,18 +1,18 @@
-import "dotenv/config";
-import "reflect-metadata";
-import express from "express";
-import http from "http";
-import cors from "cors";
-import db from "./db";
-import { ContextType, Payload } from "./types/index";
-import { expressMiddleware } from "@apollo/server/express4";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { ApolloServer } from "@apollo/server";
-import { verify } from "jsonwebtoken";
-import getSchema from "./lib/schema";
-import UserService from "./services/User/auth.service";
+import 'dotenv/config';
+import 'reflect-metadata';
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import db from './db';
+import { ContextType, Payload } from './types/index';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { ApolloServer } from '@apollo/server';
+import { verify } from 'jsonwebtoken';
+import getSchema from './lib/schema';
+import UserService from './services/User/user.service';
 
-const port = Number(process.env.SERVER_PORT) || 4001;
+const port = Number(process.env.SERVER_PORT) || 4000;
 
 async function main() {
   try {
@@ -30,23 +30,18 @@ async function main() {
     // Express app setup
     app.use(
       cors({
-        origin: ["http://localhost:3000", "https://studio.apollographql.com"],
+        origin: ['http://localhost:3000', 'https://studio.apollographql.com'],
         credentials: true,
       }),
     );
     const context = async (ctx: ContextType) => {
-      const token = ctx.req.headers.cookie?.split("token=")[1];
+      const token = ctx.req.headers.cookie?.split('token=')[1];
       try {
         if (token) {
-          const payload = verify(
-            token,
-            process.env.JWT_PRIVATE_KEY as string,
-          ) as Payload;
+          const payload = verify(token, process.env.JWT_PRIVATE_KEY as string) as Payload;
 
           if (payload.userId) {
-            const currentUser = await new UserService().findUserById(
-              payload.userId,
-            );
+            const currentUser = await new UserService().findUserById(payload.userId);
             ctx.currentUser = currentUser;
             return ctx;
           }
@@ -62,6 +57,7 @@ async function main() {
     console.log(`🚀 Server ready at http://localhost:${port}/`);
   } catch (e) {
     console.error((e as Error).message);
+    process.exit(1);
   }
 }
 

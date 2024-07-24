@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -5,8 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { CalendarDaysIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function SearchBarCarpool() {
+  const router = useRouter();
+  const search = () => {
+    router.push(`/`);
+  };
   return (
     <Card className="w-full max-w-md p-6 space-y-4">
       <div className="grid gap-2">
@@ -37,7 +44,7 @@ export default function SearchBarCarpool() {
           <Input id="passengers" type="number" placeholder="1" className="w-full" />
         </div>
       </div>
-      <Button size="lg" className="w-full">
+      <Button onClick={search} size="lg" className="w-full">
         Search
       </Button>
     </Card>

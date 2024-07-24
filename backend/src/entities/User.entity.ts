@@ -1,11 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BeforeInsert, BaseEntity } from "typeorm";
-import { Car } from "./Car.entity";
-import { Participant } from "./Carpool/Participant.entity";
-import { PreviousCarpool } from "./Carpool/Previous.entity";
-import { argon2id, hash, verify } from "argon2";
-import { Field, Int, ObjectType } from "type-graphql";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  BeforeInsert,
+  BaseEntity,
+} from 'typeorm';
+import { Car } from './Car.entity';
+import { Participant } from './Carpool/Participant.entity';
+import { PreviousCarpool } from './Carpool/Previous.entity';
+import { argon2id, hash, verify } from 'argon2';
+import { Field, Int, ObjectType } from 'type-graphql';
 
-type Role = "USER" | "ADMIN";
+type Role = 'USER' | 'ADMIN';
 
 @ObjectType()
 @Entity()
@@ -28,19 +35,19 @@ export class User extends BaseEntity {
   email: string;
 
   @Field()
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Field()
-  @Column({ type: "text", enum: ["ADMIN", "USER"], default: "USER" })
+  @Column({ type: 'text', enum: ['ADMIN', 'USER'], default: 'USER' })
   role: Role;
 
   @Field()
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @Field()
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
   @Field(() => [Car], { nullable: true })
@@ -56,7 +63,10 @@ export class User extends BaseEntity {
   previousCarpools?: PreviousCarpool[];
 }
 
-export const verifyPassword = async (plainPassword: string, hashedPassword: string): Promise<boolean> => {
+export const verifyPassword = async (
+  plainPassword: string,
+  hashedPassword: string,
+): Promise<boolean> => {
   const hashingOptions = {
     memoryCost: 2 ** 16,
     timeCost: 5,

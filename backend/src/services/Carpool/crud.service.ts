@@ -10,7 +10,9 @@ export class CarpoolService {
   }
 
   async getAll(): Promise<Carpool[]> {
-    return await this.db.find();
+    return await this.db.find({
+      relations: ['departure', 'arrival', 'car', 'car.owner', 'participants', 'participants.user'],
+    });
   }
 
   async getById(id: number): Promise<Carpool | null> {
