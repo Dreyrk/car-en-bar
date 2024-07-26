@@ -1,6 +1,7 @@
-import { Repository } from 'typeorm';
+import { Repository, ILike, MoreThanOrEqual } from 'typeorm';
 import db from '../../db';
 import { Carpool } from '../../entities/Carpool/Carpool.entity';
+import { Search } from '../../types';
 
 export class CarpoolService {
   private db: Repository<Carpool>;
@@ -9,10 +10,50 @@ export class CarpoolService {
     this.db = db.getRepository(Carpool);
   }
 
-  async getAll(): Promise<Carpool[]> {
-    return await this.db.find({
-      relations: ['departure', 'arrival', 'car', 'car.owner', 'participants', 'participants.user'],
-    });
+  async getAll(search: Search): Promise<Carpool[]> {
+    const { from, to, date, passengers } = search;
+    const whereClause: any = {};
+
+    if (from) {
+      whereClause.departure = { city: ILike(`%${from}%`) };
+    }
+
+    if (to) {
+      whereClause.arrival = { city: ILike(`%${to}%`) };
+    }
+
+    if (date) {
+      whereClause.departure_time = MoreThanOrEqual(new Date(date));
+    }
+
+    if (passengers) {
+      whereClause.max_passengers = MoreThanOrEqual(passengers);
+    }
+
+    if (Object.keys(whereClause).length > 0) {
+      return await this.db.find({
+        where: whereClause,
+        relations: [
+          'departure',
+          'arrival',
+          'car',
+          'car.owner',
+          'participants',
+          'participants.user',
+        ],
+      });
+    } else {
+      return await this.db.find({
+        relations: [
+          'departure',
+          'arrival',
+          'car',
+          'car.owner',
+          'participants',
+          'participants.user',
+        ],
+      });
+    }
   }
 
   async getById(id: number): Promise<Carpool | null> {

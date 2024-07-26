@@ -1,6 +1,6 @@
-import { Field, ObjectType } from "type-graphql";
-import { User } from "../entities/User.entity";
-import express from "express";
+import { Field, InputType, ObjectType } from 'type-graphql';
+import { User } from '../entities/User.entity';
+import express from 'express';
 
 export interface ContextType {
   req: express.Request;
@@ -25,4 +25,26 @@ export class Message {
 
   @Field()
   message: string;
+}
+
+export type Search = {
+  from: string;
+  to: string;
+  date: string;
+  passengers: number;
+};
+
+@InputType()
+export class SearchArgs implements Partial<Search> {
+  @Field({ nullable: true })
+  from?: string;
+
+  @Field({ nullable: true })
+  to?: string;
+
+  @Field({ nullable: true })
+  date?: string;
+
+  @Field({ nullable: true })
+  passengers?: number;
 }

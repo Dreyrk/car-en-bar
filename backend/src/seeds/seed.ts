@@ -35,122 +35,235 @@ async function seed() {
     const positionRepository = db.getRepository(Position);
 
     // Créer des utilisateurs
-    const user1 = new User();
-    user1.email = 'johndoe@email.com';
-    user1.username = 'johndoe';
-    user1.password = 'password';
+    const users = [
+      { email: 'johndoe@email.com', username: 'johndoe', password: 'password' },
+      { email: 'janedoe@email.com', username: 'janedoe', password: 'password' },
+      { email: 'user3@email.com', username: 'user3', password: 'password' },
+      { email: 'user4@email.com', username: 'user4', password: 'password' },
+    ];
 
-    const user2 = new User();
-    user2.email = 'janedoe@email.com';
-    user2.username = 'janedoe';
-    user2.password = 'password';
-
-    await userRepository.save([user1, user2]);
+    const savedUsers = await userRepository.save(users);
 
     // Créer des voitures
-    const car1 = new Car();
-    car1.owner = user1;
-    car1.brand = 'Toyota';
-    car1.model = 'Corolla';
-    car1.year = 2015;
-    car1.plate_number = 'ABC-123';
-    await carRepository.save(car1);
+    const cars = [
+      {
+        owner: savedUsers[0],
+        brand: 'Toyota',
+        model: 'Corolla',
+        year: 2015,
+        plate_number: 'ABC-123',
+      },
+      { owner: savedUsers[1], brand: 'Honda', model: 'Civic', year: 2018, plate_number: 'XYZ-789' },
+      { owner: savedUsers[2], brand: 'Ford', model: 'Focus', year: 2017, plate_number: 'JKL-456' },
+      {
+        owner: savedUsers[3],
+        brand: 'Chevrolet',
+        model: 'Malibu',
+        year: 2016,
+        plate_number: 'MNO-111',
+      },
+    ];
 
-    const car2 = new Car();
-    car2.owner = user2;
-    car2.brand = 'Honda';
-    car2.model = 'Civic';
-    car2.year = 2018;
-    car2.plate_number = 'XYZ-789';
-    await carRepository.save(car2);
+    const savedCars = await carRepository.save(cars);
 
     // Créer des positions
-    const departurePosition1 = new Position();
-    departurePosition1.address = '123 Rue de Rivoli';
-    departurePosition1.city = 'Paris';
-    departurePosition1.postal_code = '75001';
-    departurePosition1.country = 'France';
-    departurePosition1.latitude = 48.8566;
-    departurePosition1.longitude = 2.3522;
-    await positionRepository.save(departurePosition1);
+    const positions = [
+      {
+        address: '123 Rue de Rivoli',
+        city: 'Paris',
+        postal_code: '75001',
+        country: 'France',
+        latitude: 48.8566,
+        longitude: 2.3522,
+      },
+      {
+        address: '1 Place Antonin Poncet',
+        city: 'Lyon',
+        postal_code: '69002',
+        country: 'France',
+        latitude: 45.764,
+        longitude: 4.8357,
+      },
+      {
+        address: '1 Boulevard Charles Livon',
+        city: 'Marseille',
+        postal_code: '13007',
+        country: 'France',
+        latitude: 43.2965,
+        longitude: 5.3698,
+      },
+      {
+        address: '5 Promenade des Anglais',
+        city: 'Nice',
+        postal_code: '06000',
+        country: 'France',
+        latitude: 43.7102,
+        longitude: 7.262,
+      },
+      {
+        address: '123 Champs-Élysées',
+        city: 'Paris',
+        postal_code: '75008',
+        country: 'France',
+        latitude: 48.8698,
+        longitude: 2.3076,
+      },
+      {
+        address: 'Place Bellecour',
+        city: 'Lyon',
+        postal_code: '69002',
+        country: 'France',
+        latitude: 45.7578,
+        longitude: 4.8324,
+      },
+      {
+        address: 'Vieux-Port',
+        city: 'Marseille',
+        postal_code: '13002',
+        country: 'France',
+        latitude: 43.2964,
+        longitude: 5.3698,
+      },
+      {
+        address: 'Mont Boron',
+        city: 'Nice',
+        postal_code: '06300',
+        country: 'France',
+        latitude: 43.7019,
+        longitude: 7.2908,
+      },
+    ];
 
-    const arrivalPosition1 = new Position();
-    arrivalPosition1.address = '1 Place Antonin Poncet';
-    arrivalPosition1.city = 'Lyon';
-    arrivalPosition1.postal_code = '69002';
-    arrivalPosition1.country = 'France';
-    arrivalPosition1.latitude = 45.764;
-    arrivalPosition1.longitude = 4.8357;
-    await positionRepository.save(arrivalPosition1);
-
-    const departurePosition2 = new Position();
-    departurePosition2.address = '1 Boulevard Charles Livon';
-    departurePosition2.city = 'Marseille';
-    departurePosition2.postal_code = '13007';
-    departurePosition2.country = 'France';
-    departurePosition2.latitude = 43.2965;
-    departurePosition2.longitude = 5.3698;
-    await positionRepository.save(departurePosition2);
-
-    const arrivalPosition2 = new Position();
-    arrivalPosition2.address = '5 Promenade des Anglais';
-    arrivalPosition2.city = 'Nice';
-    arrivalPosition2.postal_code = '06000';
-    arrivalPosition2.country = 'France';
-    arrivalPosition2.latitude = 43.7102;
-    arrivalPosition2.longitude = 7.262;
-    await positionRepository.save(arrivalPosition2);
+    const savedPositions = await positionRepository.save(positions);
 
     // Créer des covoiturages
-    const carpool1 = new Carpool();
-    carpool1.departure = departurePosition1;
-    carpool1.arrival = arrivalPosition1;
-    carpool1.departure_time = new Date();
-    carpool1.arrival_time = new Date(new Date().getTime() + 2 * 60 * 60 * 1000);
-    carpool1.max_passengers = 3;
-    carpool1.price = 26;
-    carpool1.carpool_type = 'offer';
-    carpool1.car = car1;
-    await carpoolRepository.save(carpool1);
+    const carpools = [
+      {
+        departure: savedPositions[0],
+        arrival: savedPositions[1],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 2 * 60 * 60 * 1000),
+        max_passengers: 3,
+        price: 26,
+        carpool_type: 'offer',
+        car: savedCars[0],
+      },
+      {
+        departure: savedPositions[2],
+        arrival: savedPositions[3],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 1.5 * 60 * 60 * 1000),
+        max_passengers: 2,
+        price: 40,
+        carpool_type: 'offer',
+        car: savedCars[1],
+      },
+      {
+        departure: savedPositions[4],
+        arrival: savedPositions[5],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 2 * 60 * 60 * 1000),
+        max_passengers: 4,
+        price: 30,
+        carpool_type: 'offer',
+        car: savedCars[2],
+      },
+      {
+        departure: savedPositions[6],
+        arrival: savedPositions[7],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 1.5 * 60 * 60 * 1000),
+        max_passengers: 3,
+        price: 35,
+        carpool_type: 'offer',
+        car: savedCars[3],
+      },
+      {
+        departure: savedPositions[0],
+        arrival: savedPositions[3],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 3 * 60 * 60 * 1000),
+        max_passengers: 5,
+        price: 50,
+        carpool_type: 'offer',
+        car: savedCars[0],
+      },
+      {
+        departure: savedPositions[2],
+        arrival: savedPositions[5],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 4 * 60 * 60 * 1000),
+        max_passengers: 2,
+        price: 45,
+        carpool_type: 'offer',
+        car: savedCars[1],
+      },
+      {
+        departure: savedPositions[4],
+        arrival: savedPositions[7],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 5 * 60 * 60 * 1000),
+        max_passengers: 3,
+        price: 55,
+        carpool_type: 'offer',
+        car: savedCars[2],
+      },
+      {
+        departure: savedPositions[6],
+        arrival: savedPositions[1],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 2.5 * 60 * 60 * 1000),
+        max_passengers: 4,
+        price: 60,
+        carpool_type: 'offer',
+        car: savedCars[3],
+      },
+      {
+        departure: savedPositions[0],
+        arrival: savedPositions[5],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 3.5 * 60 * 60 * 1000),
+        max_passengers: 3,
+        price: 28,
+        carpool_type: 'offer',
+        car: savedCars[0],
+      },
+      {
+        departure: savedPositions[2],
+        arrival: savedPositions[7],
+        departure_time: new Date(),
+        arrival_time: new Date(new Date().getTime() + 4.5 * 60 * 60 * 1000),
+        max_passengers: 5,
+        price: 70,
+        carpool_type: 'offer',
+        car: savedCars[1],
+      },
+    ];
 
-    const carpool2 = new Carpool();
-    carpool2.departure = departurePosition2;
-    carpool2.arrival = arrivalPosition2;
-    carpool2.departure_time = new Date();
-    carpool2.arrival_time = new Date(new Date().getTime() + 1.5 * 60 * 60 * 1000);
-    carpool2.max_passengers = 2;
-    carpool2.price = 40;
-    carpool2.carpool_type = 'offer';
-    carpool2.car = car2;
-    await carpoolRepository.save(carpool2);
+    const savedCarpools = await carpoolRepository.save(carpools);
 
     // Créer des participants au covoiturage
-    const participant1 = new Participant();
-    participant1.carpool = carpool1;
-    participant1.user = user1;
-    participant1.participant_type = 'driver';
-    await participantRepository.save(participant1);
+    const participants = savedCarpools.map((carpool, index) => {
+      const participant = new Participant();
+      participant.carpool = carpool;
+      participant.user = savedUsers[index % savedUsers.length];
+      participant.participant_type = 'driver';
+      return participant;
+    });
 
-    const participant2 = new Participant();
-    participant2.carpool = carpool2;
-    participant2.user = user2;
-    participant2.participant_type = 'driver';
-    await participantRepository.save(participant2);
+    await participantRepository.save(participants);
 
     // Créer des covoiturages précédents
-    const previousCarpool1 = new PreviousCarpool();
-    previousCarpool1.carpool = carpool1;
-    previousCarpool1.user = user1;
-    previousCarpool1.rating = 5;
-    previousCarpool1.comment = 'Great ride!';
-    await previousCarpoolRepository.save(previousCarpool1);
+    const previousCarpools = savedCarpools.map((carpool, index) => {
+      const previousCarpool = new PreviousCarpool();
+      previousCarpool.carpool = carpool;
+      previousCarpool.user = savedUsers[index % savedUsers.length];
+      previousCarpool.rating = Math.floor(Math.random() * 5) + 1;
+      previousCarpool.comment = 'Great ride!';
+      return previousCarpool;
+    });
 
-    const previousCarpool2 = new PreviousCarpool();
-    previousCarpool2.carpool = carpool2;
-    previousCarpool2.user = user2;
-    previousCarpool2.rating = 4;
-    previousCarpool2.comment = 'Very good experience.';
-    await previousCarpoolRepository.save(previousCarpool2);
+    await previousCarpoolRepository.save(previousCarpools);
 
     console.log('Database filled !');
     await db.destroy();

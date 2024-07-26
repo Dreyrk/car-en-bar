@@ -21,6 +21,13 @@ export type Position = {
   longitude?: number;
 };
 
+export type Address = {
+  address: string;
+  city: string;
+  postalcode: string;
+  country: string;
+};
+
 export type Car = {
   id: number;
   owner?: UserType;

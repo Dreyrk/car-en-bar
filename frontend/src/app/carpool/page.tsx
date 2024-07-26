@@ -1,13 +1,34 @@
 "use client";
 
+import FilterBar from "@/components/carpool/FilterBar";
 import TripCard from "@/components/carpool/TripCard";
 import ErrorPage from "@/components/sections/ErrorPage";
 import Loader from "@/components/ui/loader";
 import { useAllCarpoolsQuery } from "@/graphql/generated/schema";
 import { CarpoolType } from "@/types";
+import { ArrowRight } from "lucide-react";
+import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
+
+type SearchParams = {
+  from: string;
+  to: string;
+  date: string;
+  passengers: number;
+};
 
 export default function Page() {
-  const { data, loading, error } = useAllCarpoolsQuery();
+  const searchParams = useSearchParams();
+  const search = {
+    from: searchParams.get("from"),
+    to: searchParams.get("to"),
+    date: searchParams.get("date"),
+    passengers: Number(searchParams.get("passengers")),
+  };
+  const { data, loading, error } = useAllCarpoolsQuery({
+    variables: {
+      search: search as any,
+    },
+  });
 
   if (error) {
     return <ErrorPage error={error} />;
@@ -21,14 +42,26 @@ export default function Page() {
     );
   } else {
     return (
-      <main>
-        <h1>All time</h1>
-        <span className="font-semibold text-ghost text-sm">{data?.getAllCarpools.length} carpools available</span>
+      <main className="pt-4">
+        <div className="ml-8 mb-8">
+          <h1 className="font-semibold text-2xl">
+            <span className="text-2xl font-normal">Departure on</span>{" "}
+            {search.date ? new Date(search.date).toLocaleDateString("FR-fr") : "All Carpool"}
+          </h1>
+          {search.from ? (
+            <h2 className="text-ghost flex items-center gap-2">
+              <span className="font-semibold text-lg">{search.from}</span>
+              <ArrowRight size={20} />
+              <span className="font-semibold text-lg">{search.to}</span>
+            </h2>
+          ) : (
+            <h2>All destinations</h2>
+          )}
+          <span className="font-semibold text-ghost text-sm">{data?.getAllCarpools.length} carpools available</span>
+        </div>
         <div className="md:flex">
-          <aside className="md:w-[30%] flex flex-col gap-6">
-            <span>filter bar</span>
-          </aside>
-          <div className="overflow-y-auto w-full md:w-[70%] flex flex-col gap-4 py-10 px-6">
+          <FilterBar />
+          <div className="overflow-y-auto max-h-[80dvh] w-full md:w-[70%] flex flex-col gap-4 py-10 px-6">
             {data?.getAllCarpools.map((carpool) => (
               <TripCard key={carpool.id} carpool={carpool as CarpoolType} />
             ))}

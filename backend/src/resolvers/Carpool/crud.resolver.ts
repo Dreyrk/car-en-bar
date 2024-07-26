@@ -3,6 +3,8 @@ import { Carpool } from '../../entities/Carpool/Carpool.entity';
 import { CarpoolService } from '../../services/Carpool/crud.service';
 import { GraphQLError } from 'graphql';
 import { getValidProperties } from '../../utils/getValidProperties';
+import { Search, SearchArgs } from '../../types';
+import createError from '../../utils/createError';
 
 @InputType()
 class CarpoolInput {
@@ -34,11 +36,11 @@ export class CarpoolResolver {
   }
 
   @Query(() => [Carpool])
-  async getAllCarpools(): Promise<Carpool[]> {
+  async getAllCarpools(@Arg('search', () => SearchArgs) search: Search): Promise<Carpool[]> {
     try {
-      return await this.carpoolService.getAll();
+      return await this.carpoolService.getAll(search);
     } catch (e) {
-      throw new GraphQLError(`Cannot get all Carpools: ${(e as Error).message}`);
+      throw createError(`Cannot get all Carpools: ${(e as Error).message}`, 500);
     }
   }
 
@@ -47,7 +49,7 @@ export class CarpoolResolver {
     try {
       return await this.carpoolService.getById(id);
     } catch (e) {
-      throw new GraphQLError(`Cannot get Carpool n°${id}: ${(e as Error).message}`);
+      throw createError(`Cannot get Carpool n°${id}: ${(e as Error).message}`, 500);
     }
   }
 
@@ -58,7 +60,7 @@ export class CarpoolResolver {
       const newCarpool = getValidProperties(carpool);
       return await this.carpoolService.create(newCarpool);
     } catch (e) {
-      throw new GraphQLError(`Cannot create Carpool: ${(e as Error).message}`);
+      throw createError(`Cannot create Carpool: ${(e as Error).message}`, 500);
     }
   }
 
@@ -72,7 +74,7 @@ export class CarpoolResolver {
       const carpoolData: Partial<Carpool> = getValidProperties(updatedCarpool);
       return await this.carpoolService.update(id, carpoolData);
     } catch (e) {
-      throw new GraphQLError(`Cannot update Carpool n°${id}: ${(e as Error).message}`);
+      throw createError(`Cannot update Carpool n°${id}: ${(e as Error).message}`, 500);
     }
   }
 
@@ -82,7 +84,7 @@ export class CarpoolResolver {
     try {
       return await this.carpoolService.delete(id);
     } catch (e) {
-      throw new GraphQLError(`Cannot delete Carpool n°${id}: ${(e as Error).message}`);
+      throw createError(`Cannot delete Carpool n°${id}: ${(e as Error).message}`, 500);
     }
   }
 }

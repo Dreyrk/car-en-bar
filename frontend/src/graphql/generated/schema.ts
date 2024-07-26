@@ -136,8 +136,20 @@ export type Query = {
 };
 
 
+export type QueryGetAllCarpoolsArgs = {
+  search: SearchArgs;
+};
+
+
 export type QueryGetCarpoolByIdArgs = {
   id: Scalars['Int']['input'];
+};
+
+export type SearchArgs = {
+  date: Scalars['String']['input'];
+  from: Scalars['String']['input'];
+  passengers: Scalars['Float']['input'];
+  to: Scalars['String']['input'];
 };
 
 export type User = {
@@ -173,7 +185,9 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'Message', success: boolean, message: string } };
 
-export type AllCarpoolsQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllCarpoolsQueryVariables = Exact<{
+  search: SearchArgs;
+}>;
 
 
 export type AllCarpoolsQuery = { __typename?: 'Query', getAllCarpools: Array<{ __typename?: 'Carpool', id: number, departure_time: any, arrival_time: any, price: number, max_passengers: number, carpool_type: string, departure: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, arrival: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, participants: Array<{ __typename?: 'Participant', participant_type: string, user: { __typename?: 'User', username?: string | null } }> }> };
@@ -183,7 +197,7 @@ export type GetCarpoolByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetCarpoolByIdQuery = { __typename?: 'Query', getCarpoolById?: { __typename?: 'Carpool', id: number, departure_time: any, arrival_time: any, max_passengers: number, price: number, carpool_type: string, departure: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, arrival: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, car: { __typename?: 'Car', id: number }, participants: Array<{ __typename?: 'Participant', id: number, participant_type: string, user: { __typename?: 'User', id: number, username?: string | null } }> } | null };
+export type GetCarpoolByIdQuery = { __typename?: 'Query', getCarpoolById?: { __typename?: 'Carpool', id: number, departure_time: any, arrival_time: any, max_passengers: number, price: number, carpool_type: string, departure: { __typename?: 'Position', id: number, address: string, city: string, country: string, postal_code: string }, arrival: { __typename?: 'Position', id: number, address: string, city: string, country: string, postal_code: string }, car: { __typename?: 'Car', id: number }, participants: Array<{ __typename?: 'Participant', id: number, participant_type: string, user: { __typename?: 'User', id: number, username?: string | null } }> } | null };
 
 export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -293,8 +307,8 @@ export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
 export const AllCarpoolsDocument = gql`
-    query AllCarpools {
-  getAllCarpools {
+    query AllCarpools($search: SearchArgs!) {
+  getAllCarpools(search: $search) {
     id
     departure_time
     arrival_time
@@ -335,10 +349,11 @@ export const AllCarpoolsDocument = gql`
  * @example
  * const { data, loading, error } = useAllCarpoolsQuery({
  *   variables: {
+ *      search: // value for 'search'
  *   },
  * });
  */
-export function useAllCarpoolsQuery(baseOptions?: Apollo.QueryHookOptions<AllCarpoolsQuery, AllCarpoolsQueryVariables>) {
+export function useAllCarpoolsQuery(baseOptions: Apollo.QueryHookOptions<AllCarpoolsQuery, AllCarpoolsQueryVariables> & ({ variables: AllCarpoolsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<AllCarpoolsQuery, AllCarpoolsQueryVariables>(AllCarpoolsDocument, options);
       }
@@ -359,12 +374,14 @@ export const GetCarpoolByIdDocument = gql`
   getCarpoolById(id: $id) {
     id
     departure {
+      id
       address
       city
       country
       postal_code
     }
     arrival {
+      id
       address
       city
       country

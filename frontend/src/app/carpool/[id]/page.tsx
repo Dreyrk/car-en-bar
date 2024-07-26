@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import TravelSeparator from "@/components/ui/TravelSeparator";
+import UserBox from "@/components/user/UserBox";
 import { useGetCarpoolByIdQuery } from "@/graphql/generated/schema";
 import formatDateTime from "@/utils/formatDate";
 import getTimeDifference from "@/utils/getTimeDifference";
@@ -32,9 +33,9 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
   if (error) {
     return <ErrorPage error={error} />;
   }
-  console.log(carpool);
   const departureTime = formatDateTime(carpool?.departure_time);
   const arrivalTime = formatDateTime(carpool?.arrival_time);
+  const drivers = carpool?.participants.filter(({ participant_type }) => participant_type === "driver");
   return (
     <main className="py-6">
       <div className="mb-6">
@@ -47,7 +48,7 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
           <span className="font-semibold">{arrivalTime.time}</span>
         </h2>
       </div>
-      <div className="w-full flex flex-col justify-center items-center gap-6 mt-8 md:px-8">
+      <div className="w-full max-w-6xl md:mx-auto flex flex-col justify-center items-center gap-6 mt-8 md:px-20">
         <div className="w-full flex justify-center items-center gap-6 text-ghost">
           <Info />
           {isDateInPast(carpool?.departure_time) ? (
@@ -91,6 +92,10 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
             <ChevronRight size={30} />
           </Button>
         </Link>
+        <Separator orientation="horizontal" className="rounded-full min-w-full h-2 mb-2" />
+        {drivers?.map(({ user }) => (
+          <UserBox key={user.id} user={user} />
+        ))}
       </div>
     </main>
   );
