@@ -15,7 +15,7 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
   const travelTime = getTimeDifference(carpool.departure_time, carpool.arrival_time);
   return (
     <Link href={`/carpool/${carpool.id}`}>
-      <div className="rounded-md h-[240px] p-4 shadow-card shadow-neutral-300 hover:shadow-blue-400">
+      <div className="rounded-md h-[240px] p-4 bg-white shadow-card shadow-neutral-300 hover:shadow-blue-400">
         <div className="h-[65%] w-full flex justify-between">
           <div className="flex gap-4 h-full md:hidden">
             <div className="flex flex-col justify-between h-full">
@@ -71,8 +71,8 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
           <Car color="#9ab3b8" />
           {carpool.participants
             .filter(({ participant_type }) => participant_type === "driver")
-            .map(({ user: { username, id } }) => (
-              <div key={id} className="flex items-center gap-2">
+            .map(({ user: { username }, id }) => (
+              <div key={id + 1} className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/placeholder-user.jpg" />
                   <AvatarFallback>{username?.charAt(0) || "U"}</AvatarFallback>
@@ -89,6 +89,7 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
             />
             <span className="text-xs font-semibold text-ghost">{carpool.max_passengers} passengers max.</span>
           </div>
+          <span className="flex-grow text-end">{new Date(carpool.departure_time).toLocaleDateString("FR-fr")}</span>
         </div>
       </div>
     </Link>

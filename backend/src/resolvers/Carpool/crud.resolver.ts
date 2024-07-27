@@ -3,7 +3,7 @@ import { Carpool } from '../../entities/Carpool/Carpool.entity';
 import { CarpoolService } from '../../services/Carpool/crud.service';
 import { GraphQLError } from 'graphql';
 import { getValidProperties } from '../../utils/getValidProperties';
-import { Search, SearchArgs } from '../../types';
+import { Search, SearchArgs, SortArgs, SortCarpool } from '../../types';
 import createError from '../../utils/createError';
 
 @InputType()
@@ -36,9 +36,12 @@ export class CarpoolResolver {
   }
 
   @Query(() => [Carpool])
-  async getAllCarpools(@Arg('search', () => SearchArgs) search: Search): Promise<Carpool[]> {
+  async getAllCarpools(
+    @Arg('search', () => SearchArgs) search: Search,
+    @Arg('sort', () => SortArgs, { nullable: true }) sort?: SortCarpool,
+  ): Promise<Carpool[]> {
     try {
-      return await this.carpoolService.getAll(search);
+      return await this.carpoolService.getAll(search, sort);
     } catch (e) {
       throw createError(`Cannot get all Carpools: ${(e as Error).message}`, 500);
     }

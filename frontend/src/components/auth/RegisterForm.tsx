@@ -7,9 +7,9 @@ import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { useMutation } from "@apollo/client";
-import REGISTER from "@/graphql/auth/register";
 import { toast } from "sonner";
+import { useRegisterMutation } from "@/graphql/generated/schema";
+import Loader from "../ui/loader";
 
 const registerSchema = z
   .object({
@@ -37,7 +37,7 @@ export default function RegisterForm({
 }: {
   setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [register] = useMutation(REGISTER);
+  const [register, { loading, error }] = useRegisterMutation();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -60,17 +60,23 @@ export default function RegisterForm({
         },
       });
 
-      if (res.data && !res.errors) {
+      if (res.data?.register.success && !res.errors?.length) {
         form.reset();
-        toast.success(res.data.message, {
+        toast.success(res.data.register.message, {
           description: new Date().toLocaleDateString("FR-fr"),
         });
         setAccountCreated(true);
+      } else {
+        toast.error("Failed to create new account, try again later.");
       }
     } catch (err) {
       console.error("Register error:", (err as Error).message);
     }
   };
+
+  if (loading) {
+    return <Loader size={50} />;
+  }
 
   return (
     <Card className="max-w-sm">
@@ -99,8 +105,8 @@ export default function RegisterForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Email<span className="text-xs text-gray-500 h-fit w-fit ">*</span>
+                  <FormLabel className="relative">
+                    Email<span className="text-xs absolute -top-px -right-2 text-gray-500 h-fit w-fit">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="exemple@email.com" {...field} />
@@ -114,7 +120,9 @@ export default function RegisterForm({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="relative">
+                    Password <span className="text-xs absolute -top-px -right-2 text-gray-500 h-fit w-fit">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="********" type="password" {...field} />
                   </FormControl>
@@ -127,7 +135,10 @@ export default function RegisterForm({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm your password</FormLabel>
+                  <FormLabel className="relative">
+                    Confirm your password{" "}
+                    <span className="text-xs absolute -top-px -right-2 text-gray-500 h-fit w-fit">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="********" type="password" {...field} />
                   </FormControl>

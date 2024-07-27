@@ -72,11 +72,15 @@
 }
 
 main {
-  @apply min-h-[70dvh] px-4;
+  @apply min-h-[70dvh] px-4 bg-neutral-100;
 }
 
 time {
   @apply font-semibold text-time;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes bounce-left {

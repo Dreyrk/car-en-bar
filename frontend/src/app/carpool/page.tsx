@@ -7,7 +7,7 @@ import Loader from "@/components/ui/loader";
 import { useAllCarpoolsQuery } from "@/graphql/generated/schema";
 import { CarpoolType } from "@/types";
 import { ArrowRight } from "lucide-react";
-import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 type SearchParams = {
   from: string;
@@ -24,9 +24,9 @@ export default function Page() {
     date: searchParams.get("date"),
     passengers: Number(searchParams.get("passengers")),
   };
-  const { data, loading, error } = useAllCarpoolsQuery({
+  const { data, loading, error, refetch } = useAllCarpoolsQuery({
     variables: {
-      search: search as any,
+      search,
     },
   });
 
@@ -60,8 +60,8 @@ export default function Page() {
           <span className="font-semibold text-ghost text-sm">{data?.getAllCarpools.length} carpools available</span>
         </div>
         <div className="md:flex">
-          <FilterBar />
-          <div className="overflow-y-auto max-h-[80dvh] w-full md:w-[70%] flex flex-col gap-4 py-10 px-6">
+          <FilterBar refetch={refetch} />
+          <div className="overflow-y-auto no-scrollbar max-h-[80dvh] w-full md:w-[70%] flex flex-col gap-4 py-10 px-6">
             {data?.getAllCarpools.map((carpool) => (
               <TripCard key={carpool.id} carpool={carpool as CarpoolType} />
             ))}

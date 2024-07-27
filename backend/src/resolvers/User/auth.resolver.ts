@@ -26,7 +26,7 @@ export default class UserResolver {
   @Mutation(() => Message)
   async login(@Arg('user') { email, password }: InputLogin, @Ctx() ctx: ContextType) {
     try {
-      const user = await db.getRepository(User).findOne({ where: { email } });
+      const user = await User.findByEmailWithPassword(email);
       if (
         user === null ||
         typeof user.password !== 'string' ||
@@ -53,6 +53,7 @@ export default class UserResolver {
     }
   }
 
+  @Authorized()
   @Mutation(() => Message)
   async logout(@Ctx() { req, res, currentUser }: ContextType): Promise<Message> {
     const token = req.headers.cookie?.split('token=')[1] || null;
@@ -65,7 +66,7 @@ export default class UserResolver {
   }
 
   @Authorized()
-  @Query(() => User)
+  @Query(() => Profile)
   async getProfile(@Ctx() { currentUser }: ContextType): Promise<Profile> {
     try {
       if (!currentUser) {

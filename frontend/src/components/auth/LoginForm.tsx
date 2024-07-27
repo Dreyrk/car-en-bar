@@ -8,9 +8,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from "../ui/card";
 import { toast } from "sonner";
-import { useMutation } from "@apollo/client";
-import LOGIN from "@/graphql/auth/login";
 import { useRouter } from "next/navigation";
+import { useLoginMutation } from "@/graphql/generated/schema";
+import Loader from "../ui/loader";
+import client from "@/lib/apolloClient";
 
 const registerSchema = z.object({
   username: z
@@ -37,7 +38,7 @@ export default function LoginForm({
   setAccountCreated: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const router = useRouter();
-  const [login] = useMutation(LOGIN);
+  const [login, { loading, error }] = useLoginMutation();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -57,17 +58,25 @@ export default function LoginForm({
         },
       });
 
-      if (res.data && !res.errors) {
+      if (res.data?.login.success && !res.errors?.length) {
         form.reset();
-        toast.success(res.data.message, {
+        toast.success(res.data.login.message, {
           description: new Date().toLocaleDateString("FR-fr"),
         });
-        router.push("/");
+      } else {
+        toast.error("Failed to create new account, try again later.");
       }
     } catch (err) {
       console.error("Register error:", (err as Error).message);
+    } finally {
+      client.resetStore();
+      router.push("/");
     }
   };
+
+  if (loading) {
+    return <Loader size={50} />;
+  }
 
   return (
     <Card className="max-w-sm">

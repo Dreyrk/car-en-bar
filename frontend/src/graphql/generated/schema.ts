@@ -128,16 +128,31 @@ export type PreviousCarpool = {
   user: User;
 };
 
+export type Profile = {
+  __typename?: 'Profile';
+  carpools?: Maybe<Array<Participant>>;
+  cars?: Maybe<Array<Car>>;
+  created_at: Scalars['DateTimeISO']['output'];
+  email: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  password?: Maybe<Scalars['String']['output']>;
+  previousCarpools?: Maybe<Array<PreviousCarpool>>;
+  role: Scalars['String']['output'];
+  updated_at: Scalars['DateTimeISO']['output'];
+  username?: Maybe<Scalars['String']['output']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   getAllCarpools: Array<Carpool>;
   getCarpoolById?: Maybe<Carpool>;
-  getProfile: User;
+  getProfile: Profile;
 };
 
 
 export type QueryGetAllCarpoolsArgs = {
   search: SearchArgs;
+  sort?: InputMaybe<SortArgs>;
 };
 
 
@@ -146,10 +161,16 @@ export type QueryGetCarpoolByIdArgs = {
 };
 
 export type SearchArgs = {
-  date: Scalars['String']['input'];
-  from: Scalars['String']['input'];
-  passengers: Scalars['Float']['input'];
-  to: Scalars['String']['input'];
+  date?: InputMaybe<Scalars['String']['input']>;
+  from?: InputMaybe<Scalars['String']['input']>;
+  passengers?: InputMaybe<Scalars['Float']['input']>;
+  to?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SortArgs = {
+  departure?: InputMaybe<Scalars['Boolean']['input']>;
+  price?: InputMaybe<Scalars['Boolean']['input']>;
+  travelTime?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type User = {
@@ -187,6 +208,7 @@ export type RegisterMutation = { __typename?: 'Mutation', register: { __typename
 
 export type AllCarpoolsQueryVariables = Exact<{
   search: SearchArgs;
+  sort?: InputMaybe<SortArgs>;
 }>;
 
 
@@ -202,7 +224,7 @@ export type GetCarpoolByIdQuery = { __typename?: 'Query', getCarpoolById?: { __t
 export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'User', id: number, username?: string | null, email: string, password: string, role: string, created_at: any, updated_at: any, cars?: Array<{ __typename?: 'Car', id: number, owner?: { __typename?: 'User', username?: string | null } | null }> | null, carpools?: Array<{ __typename?: 'Participant', participant_type: string, user: { __typename?: 'User', username?: string | null, id: number } }> | null, previousCarpools?: Array<{ __typename?: 'PreviousCarpool', id: number, rating?: number | null, comment?: string | null, user: { __typename?: 'User', username?: string | null }, carpool: { __typename?: 'Carpool', id: number, arrival: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, departure: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string } } }> | null } };
+export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'Profile', id: number, username?: string | null, email: string, role: string, created_at: any, updated_at: any, cars?: Array<{ __typename?: 'Car', id: number, owner?: { __typename?: 'User', username?: string | null } | null }> | null, carpools?: Array<{ __typename?: 'Participant', participant_type: string, user: { __typename?: 'User', username?: string | null, id: number } }> | null, previousCarpools?: Array<{ __typename?: 'PreviousCarpool', id: number, rating?: number | null, comment?: string | null, user: { __typename?: 'User', username?: string | null }, carpool: { __typename?: 'Carpool', id: number, arrival: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, departure: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string } } }> | null } };
 
 
 export const LoginDocument = gql`
@@ -307,8 +329,8 @@ export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
 export const AllCarpoolsDocument = gql`
-    query AllCarpools($search: SearchArgs!) {
-  getAllCarpools(search: $search) {
+    query AllCarpools($search: SearchArgs!, $sort: SortArgs) {
+  getAllCarpools(search: $search, sort: $sort) {
     id
     departure_time
     arrival_time
@@ -350,6 +372,7 @@ export const AllCarpoolsDocument = gql`
  * const { data, loading, error } = useAllCarpoolsQuery({
  *   variables: {
  *      search: // value for 'search'
+ *      sort: // value for 'sort'
  *   },
  * });
  */
@@ -445,7 +468,6 @@ export const GetProfileDocument = gql`
     id
     username
     email
-    password
     role
     created_at
     updated_at

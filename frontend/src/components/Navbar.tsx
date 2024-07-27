@@ -14,19 +14,33 @@ import { Car } from "lucide-react";
 import { useGetProfileQuery, useLogoutMutation } from "@/graphql/generated/schema";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Loader from "./ui/loader";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const router = useRouter();
-  const { data, loading, error } = useGetProfileQuery();
+  const [authenticated, setAuthenticated] = useState<boolean>(false);
+  const { data, loading, error } = useGetProfileQuery({
+    onCompleted: (data) => {
+      setAuthenticated(!!data.getProfile.id);
+    },
+  });
   const [logout] = useLogoutMutation();
-  const currentProfile = !!data?.getProfile.id;
 
   const signOut = async () => {
-    const { data, errors } = await logout();
-    if (data?.logout.success && !errors) {
-      router.push("/");
-    } else {
-      toast.error(`Cannot sign out: ${data?.logout.message}`);
+    try {
+      const { data, errors } = await logout();
+      if (data?.logout.success && !errors) {
+        router.push("/authenticate");
+      } else {
+        toast.error(`Cannot sign out: ${data?.logout.message}`);
+        console.error(`Cannot logout: ${errors}`);
+      }
+    } catch (e) {
+      toast.error(`Something wrong with logout`);
+      console.error(`Cannot logout: ${(e as Error).message}`);
+    } finally {
+      setAuthenticated(false);
     }
   };
   return (
@@ -44,7 +58,9 @@ export default function Navbar() {
             Bus
           </Link>
         </nav>
-        {currentProfile ? (
+        {loading ? (
+          <Loader />
+        ) : authenticated ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
@@ -57,13 +73,13 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>
-                <Link href={`/profile/${data.getProfile.id}`} className="flex items-center gap-2">
+                <Link href={`/profile/${data?.getProfile.id}`} className="flex items-center gap-2">
                   <div className="h-4 w-4" />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href={`/profile/${data.getProfile.id}/settings`} className="flex items-center gap-2">
+                <Link href={`/profile/${data?.getProfile.id}/settings`} className="flex items-center gap-2">
                   <div className="h-4 w-4" />
                   <span>Settings</span>
                 </Link>

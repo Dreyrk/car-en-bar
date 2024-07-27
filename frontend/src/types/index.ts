@@ -63,3 +63,9 @@ export type PreviousCarpool = {
   rating: number;
   comment: string;
 };
+
+export type SortCarpool = {
+  departure: boolean;
+  travelTime: boolean;
+  price: boolean;
+};

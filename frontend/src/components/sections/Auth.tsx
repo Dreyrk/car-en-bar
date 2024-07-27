@@ -15,9 +15,10 @@ export default function Auth() {
   useEffect(() => {
     if (data?.getProfile.id) {
       router.push("/");
+    } else {
+      return;
     }
-    return () => {};
-  }, [data]);
+  }, [data?.getProfile.id]);
 
   if (loading) {
     return <Loader />;

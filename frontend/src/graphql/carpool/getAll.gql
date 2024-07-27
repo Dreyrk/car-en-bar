@@ -1,5 +1,5 @@
-query AllCarpools($search: SearchArgs!) {
-  getAllCarpools(search: $search) {
+query AllCarpools($search: SearchArgs!, $sort: SortArgs) {
+  getAllCarpools(search: $search, sort: $sort) {
     id
     departure_time
     arrival_time

@@ -1,7 +1,8 @@
 import { Repository, ILike, MoreThanOrEqual } from 'typeorm';
 import db from '../../db';
 import { Carpool } from '../../entities/Carpool/Carpool.entity';
-import { Search } from '../../types';
+import { Search, SortCarpool } from '../../types';
+import createError from '../../utils/createError';
 
 export class CarpoolService {
   private db: Repository<Carpool>;
@@ -10,49 +11,51 @@ export class CarpoolService {
     this.db = db.getRepository(Carpool);
   }
 
-  async getAll(search: Search): Promise<Carpool[]> {
+  async getAll(search: Search, sort?: SortCarpool): Promise<Carpool[]> {
     const { from, to, date, passengers } = search;
-    const whereClause: any = {};
+    const { departure, travelTime, price } = sort || {};
+
+    const queryBuilder = this.db
+      .createQueryBuilder('carpool')
+      .leftJoinAndSelect('carpool.departure', 'departure')
+      .leftJoinAndSelect('carpool.arrival', 'arrival')
+      .leftJoinAndSelect('carpool.car', 'car')
+      .leftJoinAndSelect('car.owner', 'owner')
+      .leftJoinAndSelect('carpool.participants', 'participants')
+      .leftJoinAndSelect('participants.user', 'user');
 
     if (from) {
-      whereClause.departure = { city: ILike(`%${from}%`) };
+      queryBuilder.andWhere('departure.city ILIKE :from', { from: `%${from}%` });
     }
 
     if (to) {
-      whereClause.arrival = { city: ILike(`%${to}%`) };
+      queryBuilder.andWhere('arrival.city ILIKE :to', { to: `%${to}%` });
     }
 
     if (date) {
-      whereClause.departure_time = MoreThanOrEqual(new Date(date));
+      queryBuilder.andWhere('carpool.departure_time >= :date', { date: new Date(date) });
     }
 
     if (passengers) {
-      whereClause.max_passengers = MoreThanOrEqual(passengers);
+      queryBuilder.andWhere('carpool.max_passengers >= :passengers', { passengers });
     }
 
-    if (Object.keys(whereClause).length > 0) {
-      return await this.db.find({
-        where: whereClause,
-        relations: [
-          'departure',
-          'arrival',
-          'car',
-          'car.owner',
-          'participants',
-          'participants.user',
-        ],
-      });
-    } else {
-      return await this.db.find({
-        relations: [
-          'departure',
-          'arrival',
-          'car',
-          'car.owner',
-          'participants',
-          'participants.user',
-        ],
-      });
+    if (departure) {
+      queryBuilder.addOrderBy('carpool.departure_time', 'ASC');
+    }
+
+    if (price) {
+      queryBuilder.addOrderBy('carpool.price', 'ASC');
+    }
+
+    if (travelTime) {
+      queryBuilder.addOrderBy('carpool.arrival_time - carpool.departure_time', 'ASC');
+    }
+
+    try {
+      return await queryBuilder.getMany();
+    } catch (e) {
+      throw createError(`Cannot get all Carpools (service): ${(e as Error).message}`, 500);
     }
   }
 

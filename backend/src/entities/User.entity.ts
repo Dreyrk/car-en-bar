@@ -61,6 +61,13 @@ export class User extends BaseEntity {
   @Field(() => [PreviousCarpool], { nullable: true })
   @OneToMany(() => PreviousCarpool, (previous) => previous.user)
   previousCarpools?: PreviousCarpool[];
+
+  public static async findByEmailWithPassword(email: string): Promise<User | null> {
+    return this.createQueryBuilder('user')
+      .addSelect('user.password') // Inclut la colonne password dans la sélection
+      .where('user.email = :email', { email })
+      .getOne();
+  }
 }
 
 export const verifyPassword = async (

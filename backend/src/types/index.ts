@@ -48,3 +48,21 @@ export class SearchArgs implements Partial<Search> {
   @Field({ nullable: true })
   passengers?: number;
 }
+
+export type SortCarpool = {
+  departure: boolean;
+  travelTime: boolean;
+  price: boolean;
+};
+
+@InputType()
+export class SortArgs implements Partial<SortCarpool> {
+  @Field({ nullable: true })
+  departure?: boolean;
+
+  @Field({ nullable: true })
+  travelTime?: boolean;
+
+  @Field({ nullable: true })
+  price?: boolean;
+}
