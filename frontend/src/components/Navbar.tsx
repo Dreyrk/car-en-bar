@@ -10,12 +10,12 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Car } from "lucide-react";
+import { Car, CircleUserRound, LogOut, Settings } from "lucide-react";
 import { useGetProfileQuery, useLogoutMutation } from "@/graphql/generated/schema";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Loader from "./ui/loader";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Navbar() {
   const router = useRouter();
@@ -71,24 +71,27 @@ export default function Navbar() {
                 <span className="sr-only">Toggle user menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="pt-2">
+              <h3 className="mx-auto p-2 font-semibold">
+                Welcome {data?.getProfile.username ? data?.getProfile.username : "Unknown"} !
+              </h3>
               <DropdownMenuItem>
                 <Link href={`/profile/${data?.getProfile.id}`} className="flex items-center gap-2">
-                  <div className="h-4 w-4" />
+                  <CircleUserRound size={15} />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link href={`/profile/${data?.getProfile.id}/settings`} className="flex items-center gap-2">
-                  <div className="h-4 w-4" />
+                  <Settings size={15} />
                   <span>Settings</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Button onClick={signOut} className="flex items-center gap-2">
-                  <div className="h-4 w-4" />
                   <span>Sign out</span>
+                  <LogOut size={15} />
                 </Button>
               </DropdownMenuItem>
             </DropdownMenuContent>

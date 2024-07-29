@@ -9,13 +9,6 @@ import { CarpoolType } from "@/types";
 import { ArrowRight } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
-type SearchParams = {
-  from: string;
-  to: string;
-  date: string;
-  passengers: number;
-};
-
 export default function Page() {
   const searchParams = useSearchParams();
   const search = {
@@ -63,7 +56,11 @@ export default function Page() {
           <FilterBar refetch={refetch} />
           <div className="overflow-y-auto no-scrollbar max-h-[80dvh] w-full md:w-[70%] flex flex-col gap-4 py-10 px-6">
             {data?.getAllCarpools.map((carpool) => (
-              <TripCard key={carpool.id} carpool={carpool as CarpoolType} />
+              <TripCard
+                key={carpool.id}
+                carpool={carpool as CarpoolType}
+                passengers={Number(searchParams.get("passengers"))}
+              />
             ))}
           </div>
         </div>

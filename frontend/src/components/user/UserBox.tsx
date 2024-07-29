@@ -13,7 +13,9 @@ type UserBoxProps = {
 export default function UserBox({ user }: UserBoxProps) {
   const rating = "no rating";
   return (
-    <Link href={`/user/${user.id}`} className="w-full flex justify-between items-center gap-4 px-4">
+    <Link
+      href={`/user/${user.id}`}
+      className="w-full flex justify-between items-center gap-4 p-4 hover:bg-muted rounded-md transition-colors duration-300">
       <Avatar>
         <AvatarImage src="https://github.com/shadcn.png" />
         <AvatarFallback>{"None"}</AvatarFallback>

@@ -47,8 +47,10 @@ export default function FilterBar({ refetch }: FilterBarProps) {
     updateData();
   }, [params, sort]);
 
+  // TO DO Collapse filters on mobile
+
   return (
-    <aside className="md:w-[30%] flex flex-col gap-6">
+    <aside className="md:w-[30%] flex flex-col gap-6 max-md:px-4">
       <h3 className="flex justify-between items-center">
         <span className="font-semibold text-xl">Sort By</span>
         <Button onClick={resetSort} className="text-blue-500 font-semibold" variant={"ghost"}>

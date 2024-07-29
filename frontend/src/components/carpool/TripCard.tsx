@@ -8,13 +8,14 @@ import getTimeDifference from "@/utils/getTimeDifference";
 import formatDateTime from "@/utils/formatDate";
 import Image from "next/image";
 import TravelSeparator from "../ui/TravelSeparator";
+import Price from "../ui/price";
 
-export default function TripCard({ carpool }: { carpool: CarpoolType }) {
+export default function TripCard({ carpool, passengers }: { carpool: CarpoolType; passengers?: number }) {
   const departure_time = formatDateTime(carpool.departure_time);
   const arrival_time = formatDateTime(carpool.arrival_time);
   const travelTime = getTimeDifference(carpool.departure_time, carpool.arrival_time);
   return (
-    <Link href={`/carpool/${carpool.id}`}>
+    <Link href={`/carpool/${carpool.id}?passengers=${passengers}`}>
       <div className="rounded-md h-[240px] p-4 bg-white shadow-card shadow-neutral-300 hover:shadow-blue-400">
         <div className="h-[65%] w-full flex justify-between">
           <div className="flex gap-4 h-full md:hidden">
@@ -64,11 +65,13 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
               </div>
             </div>
           </div>
-          <span className="font-semibold text-lg">{carpool.price} €</span>
+          <Price amount={carpool.price} multiplicator={passengers} />
         </div>
         <Separator className="w-full my-4" />
-        <div className="h-[20%] flex items-center gap-8">
-          <Car color="#9ab3b8" />
+        <div className="h-[20%] max-w-full overflow-x-auto no-scrollbar flex items-center gap-8">
+          <div>
+            <Car color="#9ab3b8" />
+          </div>
           {carpool.participants
             .filter(({ participant_type }) => participant_type === "driver")
             .map(({ user: { username }, id }) => (
@@ -89,7 +92,9 @@ export default function TripCard({ carpool }: { carpool: CarpoolType }) {
             />
             <span className="text-xs font-semibold text-ghost">{carpool.max_passengers} passengers max.</span>
           </div>
-          <span className="flex-grow text-end">{new Date(carpool.departure_time).toLocaleDateString("FR-fr")}</span>
+          <span className="flex-grow text-end italic text-neutral-800">
+            {new Date(carpool.departure_time).toLocaleDateString("FR-fr")}
+          </span>
         </div>
       </div>
     </Link>
