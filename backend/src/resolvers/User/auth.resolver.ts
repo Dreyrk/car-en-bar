@@ -1,11 +1,12 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import UserService, { InputLogin, InputRegister, Profile } from '../../services/User/user.service';
 import { ContextType, Message } from '../../types';
-import { GraphQLError } from 'graphql';
-import db from '../../db';
 import { User, verifyPassword } from '../../entities/User.entity';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import createError from '../../utils/createError';
+import generateConfirmMailBody from '../../services/mail/generateConfirmMailBody';
+import { sendMail } from '../../services/mail/sendMail';
+import db from '../../db';
 
 @Resolver()
 export default class UserResolver {
@@ -23,6 +24,7 @@ export default class UserResolver {
       }
     }
   }
+
   @Mutation(() => Message)
   async login(@Arg('user') { email, password }: InputLogin, @Ctx() ctx: ContextType) {
     try {
@@ -35,7 +37,11 @@ export default class UserResolver {
         return { success: false, message: 'Wrong Credentials...' };
       }
       const secret = process.env.JWT_PRIVATE_KEY as string;
-      const token = jwt.sign({ userId: user.id, role: user.role }, secret);
+      const token = jwt.sign({ userId: user.id, role: user.role }, secret, {
+        algorithm: 'HS256',
+        expiresIn: '7d',
+      });
+
       if (token) {
         ctx.res.cookie('token', token, {
           secure: process.env.NODE_ENV === 'production',
@@ -50,6 +56,63 @@ export default class UserResolver {
         success: false,
         message: `Login Mutation: ${(err as Error).message}`,
       };
+    }
+  }
+
+  @Authorized()
+  @Mutation(() => Message)
+  async sendConfirmMail(@Ctx() ctx: ContextType, @Arg('id') id: number): Promise<Message> {
+    const user = await User.findOne({
+      where: { id },
+      select: ['id', 'username', 'email', 'confirmed_email'],
+    });
+
+    if (user?.confirmed_email) {
+      return { success: false, message: 'email already confirmed' };
+    }
+
+    if (user) {
+      const body = generateConfirmMailBody(user.id, user.username);
+      const mailSent = await sendMail(user.email, 'Email Confirmation for Car-en-bar', body);
+      user.confirm_email_sent = new Date();
+      await User.update({ id: user.id }, user);
+      return { success: mailSent, message: mailSent ? 'Email sent' : 'Cannot send email' };
+    }
+
+    return { success: true, message: 'logged out' };
+  }
+
+  @Mutation(() => Message)
+  async confirmMail(@Ctx() ctx: ContextType, @Arg('token') token?: string): Promise<Message> {
+    if (!token) {
+      return { success: false, message: 'Missing token' };
+    }
+    try {
+      const payload = jwt.verify(token, process.env.JWT_PRIVATE_KEY as string);
+      const emailToConfirm = await User.findOne({
+        where: { id: Number((payload as { id: number }).id) },
+        select: ['email', 'confirmed_email', 'id'],
+      });
+
+      if (!emailToConfirm) {
+        return { success: false, message: 'User not found' };
+      }
+
+      if (!emailToConfirm.email) {
+        return { success: false, message: 'Email not found' };
+      }
+
+      emailToConfirm.confirmed_email = true;
+      emailToConfirm.confirm_email_sent = undefined;
+      await User.update({ id: Number((payload as { id: number }).id) }, emailToConfirm);
+
+      return {
+        success: true,
+        message: 'Email confirmed',
+        userId: Number((payload as { id: number }).id),
+      };
+    } catch (e) {
+      throw createError(`Failed to confirm email: ${(e as Error).message}`, 500);
     }
   }
 

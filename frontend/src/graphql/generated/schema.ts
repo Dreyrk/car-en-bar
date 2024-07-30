@@ -62,16 +62,24 @@ export type Message = {
   __typename?: 'Message';
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
+  userId?: Maybe<Scalars['Float']['output']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
+  confirmMail: Message;
   createCarpool: Carpool;
   deleteCarpool: Scalars['Boolean']['output'];
   login: Message;
   logout: Message;
   register: Message;
+  sendConfirmMail: Message;
   updateCarpool?: Maybe<Carpool>;
+};
+
+
+export type MutationConfirmMailArgs = {
+  token: Scalars['String']['input'];
 };
 
 
@@ -92,6 +100,11 @@ export type MutationLoginArgs = {
 
 export type MutationRegisterArgs = {
   newUser: InputRegister;
+};
+
+
+export type MutationSendConfirmMailArgs = {
+  id: Scalars['Float']['input'];
 };
 
 
@@ -132,6 +145,8 @@ export type Profile = {
   __typename?: 'Profile';
   carpools?: Maybe<Array<Participant>>;
   cars?: Maybe<Array<Car>>;
+  confirm_email_sent?: Maybe<Scalars['DateTimeISO']['output']>;
+  confirmed_email: Scalars['Boolean']['output'];
   created_at: Scalars['DateTimeISO']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
@@ -177,6 +192,8 @@ export type User = {
   __typename?: 'User';
   carpools?: Maybe<Array<Participant>>;
   cars?: Maybe<Array<Car>>;
+  confirm_email_sent?: Maybe<Scalars['DateTimeISO']['output']>;
+  confirmed_email: Scalars['Boolean']['output'];
   created_at: Scalars['DateTimeISO']['output'];
   email: Scalars['String']['output'];
   id: Scalars['Int']['output'];
@@ -199,12 +216,26 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: { __typename?: 'Message', success: boolean, message: string } };
 
+export type MailConfirmedMutationVariables = Exact<{
+  token: Scalars['String']['input'];
+}>;
+
+
+export type MailConfirmedMutation = { __typename?: 'Mutation', confirmMail: { __typename?: 'Message', message: string, success: boolean, userId?: number | null } };
+
 export type RegisterMutationVariables = Exact<{
   newUser: InputRegister;
 }>;
 
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'Message', success: boolean, message: string } };
+
+export type SendConfirmMailMutationVariables = Exact<{
+  id: Scalars['Float']['input'];
+}>;
+
+
+export type SendConfirmMailMutation = { __typename?: 'Mutation', sendConfirmMail: { __typename?: 'Message', message: string, success: boolean } };
 
 export type AllCarpoolsQueryVariables = Exact<{
   search: SearchArgs;
@@ -224,7 +255,7 @@ export type GetCarpoolByIdQuery = { __typename?: 'Query', getCarpoolById?: { __t
 export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'Profile', id: number, username?: string | null, email: string, role: string, created_at: any, updated_at: any, cars?: Array<{ __typename?: 'Car', id: number, owner?: { __typename?: 'User', username?: string | null } | null }> | null, carpools?: Array<{ __typename?: 'Participant', participant_type: string, user: { __typename?: 'User', username?: string | null, id: number } }> | null, previousCarpools?: Array<{ __typename?: 'PreviousCarpool', id: number, rating?: number | null, comment?: string | null, user: { __typename?: 'User', username?: string | null }, carpool: { __typename?: 'Carpool', id: number, arrival: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, departure: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string } } }> | null } };
+export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'Profile', id: number, username?: string | null, confirmed_email: boolean, confirm_email_sent?: any | null, email: string, role: string, created_at: any, updated_at: any, cars?: Array<{ __typename?: 'Car', id: number, owner?: { __typename?: 'User', username?: string | null } | null }> | null, carpools?: Array<{ __typename?: 'Participant', participant_type: string, user: { __typename?: 'User', username?: string | null, id: number } }> | null, previousCarpools?: Array<{ __typename?: 'PreviousCarpool', id: number, rating?: number | null, comment?: string | null, user: { __typename?: 'User', username?: string | null }, carpool: { __typename?: 'Carpool', id: number, arrival: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, departure: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string } } }> | null } };
 
 
 export const LoginDocument = gql`
@@ -294,6 +325,41 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const MailConfirmedDocument = gql`
+    mutation MailConfirmed($token: String!) {
+  confirmMail(token: $token) {
+    message
+    success
+    userId
+  }
+}
+    `;
+export type MailConfirmedMutationFn = Apollo.MutationFunction<MailConfirmedMutation, MailConfirmedMutationVariables>;
+
+/**
+ * __useMailConfirmedMutation__
+ *
+ * To run a mutation, you first call `useMailConfirmedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMailConfirmedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [mailConfirmedMutation, { data, loading, error }] = useMailConfirmedMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useMailConfirmedMutation(baseOptions?: Apollo.MutationHookOptions<MailConfirmedMutation, MailConfirmedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<MailConfirmedMutation, MailConfirmedMutationVariables>(MailConfirmedDocument, options);
+      }
+export type MailConfirmedMutationHookResult = ReturnType<typeof useMailConfirmedMutation>;
+export type MailConfirmedMutationResult = Apollo.MutationResult<MailConfirmedMutation>;
+export type MailConfirmedMutationOptions = Apollo.BaseMutationOptions<MailConfirmedMutation, MailConfirmedMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($newUser: InputRegister!) {
   register(newUser: $newUser) {
@@ -328,6 +394,40 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const SendConfirmMailDocument = gql`
+    mutation SendConfirmMail($id: Float!) {
+  sendConfirmMail(id: $id) {
+    message
+    success
+  }
+}
+    `;
+export type SendConfirmMailMutationFn = Apollo.MutationFunction<SendConfirmMailMutation, SendConfirmMailMutationVariables>;
+
+/**
+ * __useSendConfirmMailMutation__
+ *
+ * To run a mutation, you first call `useSendConfirmMailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendConfirmMailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendConfirmMailMutation, { data, loading, error }] = useSendConfirmMailMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSendConfirmMailMutation(baseOptions?: Apollo.MutationHookOptions<SendConfirmMailMutation, SendConfirmMailMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendConfirmMailMutation, SendConfirmMailMutationVariables>(SendConfirmMailDocument, options);
+      }
+export type SendConfirmMailMutationHookResult = ReturnType<typeof useSendConfirmMailMutation>;
+export type SendConfirmMailMutationResult = Apollo.MutationResult<SendConfirmMailMutation>;
+export type SendConfirmMailMutationOptions = Apollo.BaseMutationOptions<SendConfirmMailMutation, SendConfirmMailMutationVariables>;
 export const AllCarpoolsDocument = gql`
     query AllCarpools($search: SearchArgs!, $sort: SortArgs) {
   getAllCarpools(search: $search, sort: $sort) {
@@ -467,6 +567,8 @@ export const GetProfileDocument = gql`
   getProfile {
     id
     username
+    confirmed_email
+    confirm_email_sent
     email
     role
     created_at

@@ -63,14 +63,13 @@ export default function LoginForm({
         toast.success(res.data.login.message, {
           description: new Date().toLocaleDateString("FR-fr"),
         });
+        client.resetStore();
+        router.push("/");
       } else {
-        toast.error("Failed to create new account, try again later.");
+        toast.error(res.data?.login.message);
       }
     } catch (err) {
       console.error("Register error:", (err as Error).message);
-    } finally {
-      client.resetStore();
-      router.push("/");
     }
   };
 

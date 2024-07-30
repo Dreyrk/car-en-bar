@@ -2,6 +2,8 @@ query GetProfile {
   getProfile {
     id
     username
+    confirmed_email
+    confirm_email_sent
     email
     role
     created_at

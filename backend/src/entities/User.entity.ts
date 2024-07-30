@@ -19,7 +19,9 @@ type Role = 'USER' | 'ADMIN';
 export class User extends BaseEntity {
   @BeforeInsert()
   protected async hashPassword() {
-    this.password = await hash(this.password);
+    if (this.password) {
+      this.password = await hash(this.password);
+    }
   }
 
   @Field(() => Int)
@@ -27,12 +29,20 @@ export class User extends BaseEntity {
   id: number;
 
   @Field({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   username?: string;
 
   @Field()
   @Column()
   email: string;
+
+  @Field()
+  @Column({ default: false })
+  confirmed_email: boolean;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  confirm_email_sent?: Date;
 
   @Field()
   @Column({ select: false })
@@ -64,7 +74,7 @@ export class User extends BaseEntity {
 
   public static async findByEmailWithPassword(email: string): Promise<User | null> {
     return this.createQueryBuilder('user')
-      .addSelect('user.password') // Inclut la colonne password dans la sélection
+      .addSelect('user.password')
       .where('user.email = :email', { email })
       .getOne();
   }

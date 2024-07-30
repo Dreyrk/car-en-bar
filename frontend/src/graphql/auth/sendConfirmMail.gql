@@ -1,0 +1,6 @@
+mutation SendConfirmMail($id: Float!) {
+  sendConfirmMail(id: $id) {
+    message
+    success
+  }
+}

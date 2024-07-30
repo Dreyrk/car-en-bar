@@ -16,6 +16,7 @@ export interface Payload {
 export interface Message {
   success: boolean;
   message: string;
+  userId?: number;
 }
 
 @ObjectType()
@@ -25,6 +26,9 @@ export class Message {
 
   @Field()
   message: string;
+
+  @Field({ nullable: true })
+  userId?: number;
 }
 
 export type Search = {

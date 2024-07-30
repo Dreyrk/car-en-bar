@@ -1,0 +1,7 @@
+mutation MailConfirmed($token: String!) {
+  confirmMail(token: $token) {
+    message
+    success
+    userId
+  }
+}

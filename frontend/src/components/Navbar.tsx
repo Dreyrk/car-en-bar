@@ -55,7 +55,7 @@ export default function Navbar() {
             Carpool
           </Link>
           <Link href="/bus" className="text-muted-foreground hover:text-foreground">
-            Bus
+            Create Carpool
           </Link>
         </nav>
         {loading ? (
@@ -66,7 +66,7 @@ export default function Navbar() {
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/placeholder-user.jpg" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarFallback>{data?.getProfile.username?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
                 <span className="sr-only">Toggle user menu</span>
               </Button>
@@ -76,13 +76,15 @@ export default function Navbar() {
                 Welcome {data?.getProfile.username ? data?.getProfile.username : "Unknown"} !
               </h3>
               <DropdownMenuItem>
-                <Link href={`/profile/${data?.getProfile.id}`} className="flex items-center gap-2">
+                <Link href={`/profile/${data?.getProfile.id}`} className="flex items-center gap-2 w-full h-full">
                   <CircleUserRound size={15} />
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href={`/profile/${data?.getProfile.id}/settings`} className="flex items-center gap-2">
+                <Link
+                  href={`/profile/${data?.getProfile.id}/settings`}
+                  className="flex items-center gap-2 w-full h-full">
                   <Settings size={15} />
                   <span>Settings</span>
                 </Link>

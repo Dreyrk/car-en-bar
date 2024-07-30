@@ -69,3 +69,9 @@ export type SortCarpool = {
   travelTime: boolean;
   price: boolean;
 };
+
+export type SectionItem = {
+  text: string;
+  icon: boolean;
+  link?: string;
+};

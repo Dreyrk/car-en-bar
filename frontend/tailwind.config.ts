@@ -73,6 +73,7 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "bounce-left": "bounce-left 1s infinite",
+        "scroll-text": "scroll-text 10s linear infinite",
       },
     },
   },
