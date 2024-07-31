@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner";
 import { useRegisterMutation } from "@/graphql/generated/schema";
 import Loader from "../ui/loader";
+import Required from "../ui/required";
 
 const registerSchema = z
   .object({
@@ -106,7 +107,8 @@ export default function RegisterForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="relative">
-                    Email<span className="text-xs absolute -top-px -right-2 text-gray-500 h-fit w-fit">*</span>
+                    Email
+                    <Required />
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="exemple@email.com" {...field} />
@@ -121,7 +123,7 @@ export default function RegisterForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="relative">
-                    Password <span className="text-xs absolute -top-px -right-2 text-gray-500 h-fit w-fit">*</span>
+                    Password <Required />
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="********" type="password" {...field} />
@@ -136,8 +138,7 @@ export default function RegisterForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="relative">
-                    Confirm your password{" "}
-                    <span className="text-xs absolute -top-px -right-2 text-gray-500 h-fit w-fit">*</span>
+                    Confirm your password <Required />
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="********" type="password" {...field} />

@@ -13,15 +13,19 @@ export class Car extends BaseEntity {
   @ManyToOne(() => User, (user) => user.cars)
   owner?: User;
 
+  @Field()
   @Column()
   brand: string;
 
+  @Field()
   @Column()
   model: string;
 
+  @Field()
   @Column({ nullable: true })
   year?: number;
 
+  @Field()
   @Column({ nullable: true })
   plate_number?: string;
 }

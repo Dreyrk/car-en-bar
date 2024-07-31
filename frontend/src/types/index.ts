@@ -75,3 +75,5 @@ export type SectionItem = {
   icon: boolean;
   link?: string;
 };
+
+export type ComboField = { label: string; value: string };

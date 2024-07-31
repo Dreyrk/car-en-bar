@@ -19,7 +19,10 @@ export default class UserService {
 
   async findUserById(id: number) {
     try {
-      return await this.db.findOneBy({ id });
+      return await this.db.findOne({
+        where: { id },
+        relations: ['cars', 'carpools', 'previousCarpools'],
+      });
     } catch (e) {
       console.error((e as Error).message);
       return null;

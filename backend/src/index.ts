@@ -45,9 +45,11 @@ async function main() {
             ctx.currentUser = currentUser;
             return ctx;
           }
+        } else {
+          ctx.res.clearCookie('token');
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
       return ctx;
     };

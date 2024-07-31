@@ -1,0 +1,6 @@
+mutation CreateCar($car: CarInput!) {
+  createCar(car: $car) {
+    success
+    message
+  }
+}

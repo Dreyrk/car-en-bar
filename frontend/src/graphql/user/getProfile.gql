@@ -10,9 +10,8 @@ query GetProfile {
     updated_at
     cars {
       id
-      owner {
-        username
-      }
+      brand
+      model
     }
     carpools {
       participant_type

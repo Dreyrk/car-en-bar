@@ -10,6 +10,12 @@ import db from '../../db';
 
 @Resolver()
 export default class UserResolver {
+  private userService: UserService;
+
+  constructor() {
+    this.userService = new UserService();
+  }
+
   @Mutation(() => Message)
   async register(@Arg('newUser') newUser: InputRegister) {
     const alreadyRegistered = Boolean(await new UserService().findUserByEmail(newUser.email));
@@ -135,8 +141,7 @@ export default class UserResolver {
       if (!currentUser) {
         throw createError('User is not logged in', 401);
       }
-
-      const user = await User.findOne({ where: { id: currentUser.id } });
+      const user = await this.userService.findUserById(currentUser.id);
       if (!user) {
         throw createError('User not found', 404);
       }

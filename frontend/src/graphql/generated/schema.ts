@@ -20,8 +20,19 @@ export type Scalars = {
 
 export type Car = {
   __typename?: 'Car';
+  brand: Scalars['String']['output'];
   id: Scalars['Int']['output'];
+  model: Scalars['String']['output'];
   owner?: Maybe<User>;
+  plate_number: Scalars['String']['output'];
+  year: Scalars['Float']['output'];
+};
+
+export type CarInput = {
+  brand: Scalars['String']['input'];
+  model: Scalars['String']['input'];
+  plate_number?: InputMaybe<Scalars['String']['input']>;
+  year?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type Carpool = {
@@ -68,12 +79,15 @@ export type Message = {
 export type Mutation = {
   __typename?: 'Mutation';
   confirmMail: Message;
+  createCar: Message;
   createCarpool: Carpool;
+  deleteCar: Scalars['Boolean']['output'];
   deleteCarpool: Scalars['Boolean']['output'];
   login: Message;
   logout: Message;
   register: Message;
   sendConfirmMail: Message;
+  updateCar?: Maybe<Car>;
   updateCarpool?: Maybe<Carpool>;
 };
 
@@ -83,8 +97,18 @@ export type MutationConfirmMailArgs = {
 };
 
 
+export type MutationCreateCarArgs = {
+  car: CarInput;
+};
+
+
 export type MutationCreateCarpoolArgs = {
   carpool: CarpoolInput;
+};
+
+
+export type MutationDeleteCarArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
@@ -105,6 +129,12 @@ export type MutationRegisterArgs = {
 
 export type MutationSendConfirmMailArgs = {
   id: Scalars['Float']['input'];
+};
+
+
+export type MutationUpdateCarArgs = {
+  data: CarInput;
+  id: Scalars['Int']['input'];
 };
 
 
@@ -160,7 +190,9 @@ export type Profile = {
 export type Query = {
   __typename?: 'Query';
   getAllCarpools: Array<Carpool>;
+  getCar?: Maybe<Car>;
   getCarpoolById?: Maybe<Carpool>;
+  getCars: Array<Car>;
   getProfile: Profile;
 };
 
@@ -168,6 +200,11 @@ export type Query = {
 export type QueryGetAllCarpoolsArgs = {
   search: SearchArgs;
   sort?: InputMaybe<SortArgs>;
+};
+
+
+export type QueryGetCarArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
@@ -255,7 +292,14 @@ export type GetCarpoolByIdQuery = { __typename?: 'Query', getCarpoolById?: { __t
 export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'Profile', id: number, username?: string | null, confirmed_email: boolean, confirm_email_sent?: any | null, email: string, role: string, created_at: any, updated_at: any, cars?: Array<{ __typename?: 'Car', id: number, owner?: { __typename?: 'User', username?: string | null } | null }> | null, carpools?: Array<{ __typename?: 'Participant', participant_type: string, user: { __typename?: 'User', username?: string | null, id: number } }> | null, previousCarpools?: Array<{ __typename?: 'PreviousCarpool', id: number, rating?: number | null, comment?: string | null, user: { __typename?: 'User', username?: string | null }, carpool: { __typename?: 'Carpool', id: number, arrival: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, departure: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string } } }> | null } };
+export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'Profile', id: number, username?: string | null, confirmed_email: boolean, confirm_email_sent?: any | null, email: string, role: string, created_at: any, updated_at: any, cars?: Array<{ __typename?: 'Car', id: number, brand: string, model: string }> | null, carpools?: Array<{ __typename?: 'Participant', participant_type: string, user: { __typename?: 'User', username?: string | null, id: number } }> | null, previousCarpools?: Array<{ __typename?: 'PreviousCarpool', id: number, rating?: number | null, comment?: string | null, user: { __typename?: 'User', username?: string | null }, carpool: { __typename?: 'Carpool', id: number, arrival: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string }, departure: { __typename?: 'Position', address: string, city: string, country: string, postal_code: string } } }> | null } };
+
+export type CreateCarMutationVariables = Exact<{
+  car: CarInput;
+}>;
+
+
+export type CreateCarMutation = { __typename?: 'Mutation', createCar: { __typename?: 'Message', success: boolean, message: string } };
 
 
 export const LoginDocument = gql`
@@ -575,9 +619,8 @@ export const GetProfileDocument = gql`
     updated_at
     cars {
       id
-      owner {
-        username
-      }
+      brand
+      model
     }
     carpools {
       participant_type
@@ -644,3 +687,37 @@ export type GetProfileQueryHookResult = ReturnType<typeof useGetProfileQuery>;
 export type GetProfileLazyQueryHookResult = ReturnType<typeof useGetProfileLazyQuery>;
 export type GetProfileSuspenseQueryHookResult = ReturnType<typeof useGetProfileSuspenseQuery>;
 export type GetProfileQueryResult = Apollo.QueryResult<GetProfileQuery, GetProfileQueryVariables>;
+export const CreateCarDocument = gql`
+    mutation CreateCar($car: CarInput!) {
+  createCar(car: $car) {
+    success
+    message
+  }
+}
+    `;
+export type CreateCarMutationFn = Apollo.MutationFunction<CreateCarMutation, CreateCarMutationVariables>;
+
+/**
+ * __useCreateCarMutation__
+ *
+ * To run a mutation, you first call `useCreateCarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCarMutation, { data, loading, error }] = useCreateCarMutation({
+ *   variables: {
+ *      car: // value for 'car'
+ *   },
+ * });
+ */
+export function useCreateCarMutation(baseOptions?: Apollo.MutationHookOptions<CreateCarMutation, CreateCarMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCarMutation, CreateCarMutationVariables>(CreateCarDocument, options);
+      }
+export type CreateCarMutationHookResult = ReturnType<typeof useCreateCarMutation>;
+export type CreateCarMutationResult = Apollo.MutationResult<CreateCarMutation>;
+export type CreateCarMutationOptions = Apollo.BaseMutationOptions<CreateCarMutation, CreateCarMutationVariables>;

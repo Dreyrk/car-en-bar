@@ -5,14 +5,13 @@ import Loader from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import UserBox from "@/components/user/UserBox";
 import { useGetProfileQuery, useSendConfirmMailMutation } from "@/graphql/generated/schema";
-import { SectionItem, UserType } from "@/types";
+import { UserType } from "@/types";
 import { ProfileSectionProps } from "@/types/props";
 import { CircleCheck, CircleX, Ellipsis, PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { useState } from "react";
 
-const sections: (id: number) => ProfileSectionProps[] = (id) => {
+const sections: (user: UserType) => ProfileSectionProps[] = (user) => {
   return [
     {
       title: "Vehicules",
@@ -21,9 +20,15 @@ const sections: (id: number) => ProfileSectionProps[] = (id) => {
         {
           text: "Add a vehicule",
           icon: true,
-          link: `/profile/${id}/vehicule/new`,
+          link: `/profile/${user.id}/vehicule/new`,
         },
-      ],
+      ].concat(
+        (user.cars ?? []).map(({ brand, model, id }) => ({
+          text: `${brand} ${model}`,
+          icon: false,
+          link: `/profile/${user.id}/vehicule/${id}`,
+        }))
+      ),
     },
   ];
 };
@@ -33,10 +38,6 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
   const [sendConfirmMail] = useSendConfirmMailMutation();
   const currentProfile = data?.getProfile;
   const [emailSent, setEmailSent] = useState<Date | undefined>(currentProfile?.confirm_email_sent);
-
-  if (!currentProfile) {
-    redirect("/");
-  }
 
   const confirmEmail = async () => {
     if (currentProfile?.id) {
@@ -86,8 +87,8 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
           <Button
             className="flex justify-start gap-4 text-blue-500 h-full w-full hover:bg-muted rounded-md"
             variant={"ghost"}>
-            <EmailConfirmed confirmedEmail={currentProfile.confirmed_email} emailSent={emailSent} />
-            <span className="text-lg max-md:text-sm whitespace-nowrap">{currentProfile.email}</span>
+            <EmailConfirmed confirmedEmail={Boolean(currentProfile?.confirmed_email)} emailSent={emailSent} />
+            <span className="text-lg max-md:text-sm whitespace-nowrap">{currentProfile?.email}</span>
           </Button>
         ) : (
           <Button
@@ -103,7 +104,7 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
         )}
       </div>
       <Separator orientation="horizontal" className="my-4" />
-      {sections.map((section) => (
+      {sections(currentProfile as UserType).map((section) => (
         <Section key={section.id} {...section} />
       ))}
     </main>
@@ -122,7 +123,7 @@ export function Section({ title, items, id }: ProfileSectionProps) {
                 className="flex justify-start gap-4 text-blue-500 h-full w-full hover:bg-muted rounded-md"
                 variant={"ghost"}>
                 {icon && <PlusCircle size={30} />}
-                <span className="text-lg max-md:text-sm whitespace-nowrap hover:animate-scroll-text">{text}</span>
+                <span className="text-lg max-md:text-sm whitespace-nowrap">{text}</span>
               </Button>
             </Link>
           ) : (
@@ -131,7 +132,7 @@ export function Section({ title, items, id }: ProfileSectionProps) {
               className="flex justify-start gap-4 text-blue-500 h-full w-full hover:bg-muted rounded-md"
               variant={"ghost"}>
               {icon && <PlusCircle size={30} />}
-              <span className="text-lg max-md:text-sm whitespace-nowrap hover:animate-scroll-text">{text}</span>
+              <span className="text-lg max-md:text-sm whitespace-nowrap">{text}</span>
             </Button>
           )
         )}

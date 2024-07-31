@@ -1,6 +1,7 @@
 import { Repository } from 'typeorm';
 import db from '../../db';
 import { Car } from '../../entities/Car.entity';
+import { User } from '../../entities/User.entity';
 
 export class CarService {
   private db: Repository<Car>;
@@ -17,8 +18,25 @@ export class CarService {
     return await this.db.findOneBy({ id });
   }
 
-  async create(carData: Partial<Car>): Promise<Car> {
-    const car = this.db.create(carData);
+  async create(carData: Partial<Car>, userId?: number): Promise<Car> {
+    let car: Car;
+    if (userId) {
+      const currentUser = await User.findOne({ where: { id: userId } });
+      if (!currentUser) {
+        throw new Error('User not found');
+      }
+
+      car = this.db.create(carData);
+      car.owner = currentUser;
+
+      const savedCar = await this.db.save(car);
+
+      currentUser.cars = [...(currentUser.cars || []), savedCar];
+      await currentUser.save();
+
+      return savedCar;
+    }
+    car = this.db.create(carData);
     return await this.db.save(car);
   }
 
