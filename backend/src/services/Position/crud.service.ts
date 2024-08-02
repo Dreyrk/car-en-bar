@@ -1,7 +1,7 @@
 import { ILike, Repository } from 'typeorm';
 import db from '../../db';
 import { Position } from '../../entities/Position.entity';
-
+import { NewPositionInput } from '../../types/input';
 export class PositionService {
   private db: Repository<Position>;
 
@@ -25,6 +25,24 @@ export class PositionService {
 
   async getById(id: number): Promise<Position | null> {
     return await this.db.findOneBy({ id });
+  }
+
+  async findOrCreatePosition(positionInput: NewPositionInput): Promise<Position> {
+    let position = await this.db.findOne({
+      where: {
+        address: positionInput.address,
+        city: positionInput.city,
+        postal_code: positionInput.postal_code,
+        country: positionInput.country,
+      },
+    });
+
+    if (!position) {
+      position = this.db.create(positionInput);
+      await position.save();
+    }
+
+    return position;
   }
 
   async create(positionData: Position): Promise<Position> {

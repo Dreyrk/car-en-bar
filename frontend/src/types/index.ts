@@ -11,11 +11,23 @@ export type CarpoolType = {
   participants: Participant[];
 };
 
+export type CarpoolInputType = {
+  departure: Omit<Position, "id">;
+  arrival: Omit<Position, "id">;
+  departure_time: string;
+  arrival_time: string;
+  max_passengers: number;
+  price: number;
+  carpool_type: "offer" | "request";
+  car: Car;
+  participants: Participant[];
+};
+
 export type Position = {
   id: number;
   address: string;
   city: string;
-  postal_code: string;
+  postal_code: string | number;
   country: string;
   latitude?: number;
   longitude?: number;
@@ -24,7 +36,7 @@ export type Position = {
 export type Address = {
   address: string;
   city: string;
-  postalcode: string;
+  postalcode: string | number;
   country: string;
 };
 

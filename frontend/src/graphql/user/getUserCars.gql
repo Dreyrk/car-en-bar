@@ -1,0 +1,11 @@
+query GetUserCars {
+  getProfile {
+    id
+    cars {
+      id
+      brand
+      model
+      max_passengers
+    }
+  }
+}

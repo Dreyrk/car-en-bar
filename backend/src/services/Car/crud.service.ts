@@ -14,8 +14,12 @@ export class CarService {
     return await this.db.find();
   }
 
-  async getById(id: number): Promise<Car | null> {
-    return await this.db.findOneBy({ id });
+  async getById(id: number | undefined): Promise<Car | null> {
+    if (id) {
+      return await this.db.findOneBy({ id });
+    } else {
+      return null;
+    }
   }
 
   async create(carData: Partial<Car>, userId?: number): Promise<Car> {

@@ -52,15 +52,31 @@ async function seed() {
         model: 'Corolla',
         year: 2015,
         plate_number: 'ABC-123',
+        max_passengers: 2,
       },
-      { owner: savedUsers[1], brand: 'Honda', model: 'Civic', year: 2018, plate_number: 'XYZ-789' },
-      { owner: savedUsers[2], brand: 'Ford', model: 'Focus', year: 2017, plate_number: 'JKL-456' },
+      {
+        owner: savedUsers[1],
+        brand: 'Honda',
+        model: 'Civic',
+        year: 2018,
+        plate_number: 'XYZ-789',
+        max_passengers: 2,
+      },
+      {
+        owner: savedUsers[2],
+        brand: 'Ford',
+        model: 'Focus',
+        year: 2017,
+        plate_number: 'JKL-456',
+        max_passengers: 2,
+      },
       {
         owner: savedUsers[3],
         brand: 'Chevrolet',
         model: 'Malibu',
         year: 2016,
         plate_number: 'MNO-111',
+        max_passengers: 2,
       },
     ];
 

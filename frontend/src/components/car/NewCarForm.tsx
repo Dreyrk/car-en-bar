@@ -18,6 +18,7 @@ const carSchema = z.object({
   model: z.string().min(1, { message: "Car model is required" }),
   year: z.number().optional(),
   plate_number: z.string().optional(),
+  max_passengers: z.number().min(1),
 });
 
 export default function NewCarForm() {
@@ -32,6 +33,7 @@ export default function NewCarForm() {
       model: "",
       year: 2011,
       plate_number: "",
+      max_passengers: 1,
     },
   });
 
@@ -117,6 +119,19 @@ export default function NewCarForm() {
                   <FormLabel>Plate Number</FormLabel>
                   <FormControl>
                     <Input placeholder="AB-756-YZ" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="max_passengers"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Passengers</FormLabel>
+                  <FormControl>
+                    <Input placeholder="2" type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

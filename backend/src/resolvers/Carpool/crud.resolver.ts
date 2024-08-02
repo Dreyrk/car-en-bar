@@ -1,31 +1,11 @@
-import { Resolver, Query, Mutation, Arg, Int, InputType, Field, Authorized } from 'type-graphql';
+import { Resolver, Query, Mutation, Arg, Int, Authorized, Ctx } from 'type-graphql';
 import { Carpool } from '../../entities/Carpool/Carpool.entity';
 import { CarpoolService } from '../../services/Carpool/crud.service';
-import { GraphQLError } from 'graphql';
 import { getValidProperties } from '../../utils/getValidProperties';
-import { Search, SearchArgs, SortArgs, SortCarpool } from '../../types';
+import { ContextType, Message, Search, SearchArgs, SortArgs, SortCarpool } from '../../types';
 import createError from '../../utils/createError';
-
-@InputType()
-class CarpoolInput {
-  @Field({ nullable: true })
-  departure_time?: Date;
-
-  @Field(() => Int, { nullable: true })
-  max_passengers?: number;
-
-  @Field({ nullable: true })
-  carpool_type?: string;
-
-  @Field(() => Int, { nullable: true })
-  departureId?: number;
-
-  @Field(() => Int, { nullable: true })
-  arrivalId?: number;
-
-  @Field(() => Int, { nullable: true })
-  carId?: number;
-}
+import { CarpoolInput } from '../../types/input';
+import { User } from '../../entities/User.entity';
 
 @Resolver()
 export class CarpoolResolver {
@@ -58,10 +38,17 @@ export class CarpoolResolver {
 
   @Authorized()
   @Mutation(() => Carpool)
-  async createCarpool(@Arg('carpool') carpool: CarpoolInput): Promise<Carpool> {
+  async createCarpool(
+    @Ctx() { currentUser }: ContextType,
+    @Arg('carpool') carpoolData: CarpoolInput,
+  ): Promise<Message> {
     try {
-      const newCarpool = getValidProperties(carpool);
-      return await this.carpoolService.create(newCarpool);
+      const success = await this.carpoolService.create(carpoolData, currentUser as Partial<User>);
+      if (success) {
+        return { success, message: 'created successfully' };
+      } else {
+        return { success, message: 'Somthing wrong' };
+      }
     } catch (e) {
       throw createError(`Cannot create Carpool: ${(e as Error).message}`, 500);
     }
@@ -74,8 +61,8 @@ export class CarpoolResolver {
     @Arg('updatedCarpool') updatedCarpool: CarpoolInput,
   ): Promise<Carpool | null> {
     try {
-      const carpoolData: Partial<Carpool> = getValidProperties(updatedCarpool);
-      return await this.carpoolService.update(id, carpoolData);
+      const carpoolData = getValidProperties(updatedCarpool);
+      return await this.carpoolService.update(id, carpoolData as CarpoolInput);
     } catch (e) {
       throw createError(`Cannot update Carpool n°${id}: ${(e as Error).message}`, 500);
     }

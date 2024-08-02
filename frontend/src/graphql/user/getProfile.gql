@@ -12,6 +12,7 @@ query GetProfile {
       id
       brand
       model
+      max_passengers
     }
     carpools {
       participant_type

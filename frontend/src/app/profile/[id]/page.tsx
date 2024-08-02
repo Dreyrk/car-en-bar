@@ -16,6 +16,7 @@ const sections: (user: UserType) => ProfileSectionProps[] = (user) => {
     {
       title: "Vehicules",
       id: "profile_vehicules",
+      verified: false,
       items: [
         {
           text: "Add a vehicule",
@@ -103,6 +104,15 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
           </Button>
         )}
       </div>
+      <Separator orientation="horizontal" className="my-4" />
+      <Link href={"/carpool/new"}>
+        <Button
+          className="flex justify-start gap-4 text-blue-500 h-full w-full hover:bg-muted rounded-md"
+          variant={"ghost"}>
+          <EmailConfirmed confirmedEmail={Boolean(currentProfile?.confirmed_email)} emailSent={emailSent} />
+          <span className="text-lg max-md:text-sm whitespace-nowrap">Publish new carpool</span>
+        </Button>
+      </Link>
       <Separator orientation="horizontal" className="my-4" />
       {sections(currentProfile as UserType).map((section) => (
         <Section key={section.id} {...section} />

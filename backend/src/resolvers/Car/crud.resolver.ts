@@ -3,21 +3,7 @@ import { Car } from '../../entities/Car.entity';
 import { CarService } from '../../services/Car/crud.service';
 import { ContextType, Message } from '../../types';
 import createError from '../../utils/createError';
-
-@InputType()
-class CarInput {
-  @Field()
-  brand: string;
-
-  @Field()
-  model: string;
-
-  @Field({ nullable: true })
-  year?: number;
-
-  @Field({ nullable: true })
-  plate_number?: string;
-}
+import { CarInput } from '../../types/input';
 
 @Resolver()
 export class CarResolver {

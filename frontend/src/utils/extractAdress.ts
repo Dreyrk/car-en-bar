@@ -21,7 +21,10 @@ function extractAddress(place: google.maps.places.PlaceResult): Address {
         addressComponents.city = component.long_name;
       }
       if (types.includes("postal_code")) {
-        addressComponents.postalcode = component.long_name;
+        addressComponents.postalcode = component.long_name
+          .split("")
+          .filter((letter) => !isNaN(Number(letter)))
+          .join("");
       }
       if (types.includes("country")) {
         addressComponents.country = component.long_name;

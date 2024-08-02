@@ -28,4 +28,8 @@ export class Car extends BaseEntity {
   @Field()
   @Column({ nullable: true })
   plate_number?: string;
+
+  @Field()
+  @Column()
+  max_passengers: number;
 }

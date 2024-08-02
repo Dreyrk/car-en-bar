@@ -15,7 +15,9 @@ export class Participant extends BaseEntity {
   user: User;
 
   @Field(() => [Carpool])
-  @ManyToOne(() => Carpool)
+  @ManyToOne(() => Carpool, (carpool) => carpool.participants, {
+    onDelete: 'CASCADE',
+  })
   carpool: Carpool;
 
   @Field(() => String)
