@@ -11,11 +11,13 @@ export type CarpoolType = {
   participants: Participant[];
 };
 
+interface PositionInput extends Omit<Position, "id"> {
+  time: string;
+}
+
 export type CarpoolInputType = {
-  departure: Omit<Position, "id">;
-  arrival: Omit<Position, "id">;
-  departure_time: string;
-  arrival_time: string;
+  departure: PositionInput;
+  arrival: PositionInput;
   max_passengers: number;
   price: number;
   carpool_type: "offer" | "request";
@@ -24,7 +26,7 @@ export type CarpoolInputType = {
 };
 
 export type Position = {
-  id: number;
+  id?: number;
   address: string;
   city: string;
   postal_code: string | number;
@@ -38,6 +40,8 @@ export type Address = {
   city: string;
   postalcode: string | number;
   country: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type Car = {
@@ -89,3 +93,14 @@ export type SectionItem = {
 };
 
 export type ComboField = { label: string; value: string };
+
+export type Travel = {
+  duration: {
+    text: string;
+    value: number;
+  };
+  distance: {
+    text: string;
+    value: number;
+  };
+};

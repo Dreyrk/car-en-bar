@@ -1,13 +1,35 @@
-async function getTravelTime(departure: string, arrival: string) {
-  try {
-    const res = await fetch(
-      `https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-    );
+import { Position, Travel } from "@/types";
 
-    if (res.ok) {
-      const data = await res.json();
-      console.log(data);
-    }
+function getTravelTime(departure: Position, arrival: Position): Travel | null {
+  let travel = null;
+  try {
+    const departureString =
+      departure.latitude && departure.longitude
+        ? `${departure.latitude},${departure.longitude}`
+        : `${departure.city}, ${departure.country}`;
+    const arrivalString =
+      arrival.latitude && arrival.longitude
+        ? `${arrival.latitude},${arrival.longitude}`
+        : `${arrival.city}, ${arrival.country}`;
+    const distanceService = new google.maps.DistanceMatrixService();
+    distanceService.getDistanceMatrix(
+      {
+        origins: [departureString],
+        destinations: [arrivalString],
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (res, status) => {
+        if (status === google.maps.DistanceMatrixStatus.OK) {
+          travel = {
+            distance: res?.rows[0].elements[0].distance,
+            duration: res?.rows[0].elements[0].duration,
+          };
+        } else {
+          console.error(`Error: ${status}`);
+        }
+      }
+    );
+    return travel;
   } catch (e) {
     throw new Error(`Cannot fetch google maps api: ${(e as Error).message}`);
   }

@@ -26,15 +26,15 @@ const defaultCarpool: CarpoolInputType = {
     city: "",
     country: "",
     postal_code: "",
+    time: "",
   },
   arrival: {
     address: "",
     city: "",
     country: "",
     postal_code: "",
+    time: "",
   },
-  departure_time: "",
-  arrival_time: "",
   carpool_type: "offer",
   price: 0,
   max_passengers: 0,
@@ -50,14 +50,14 @@ export default function Page() {
   const steps: React.ReactNode[] = [
     <DepartureStep key={0} state={carpool} setState={setCarpool} />,
     <ArrivalStep key={1} state={carpool} setState={setCarpool} />,
-    <VehiculeStep setState={setCarpool} key={2} />,
+    <VehiculeStep state={carpool} setState={setCarpool} key={2} />,
     <PlaylistStep setState={setCarpool} key={3} />,
-    <RecapStep setState={setCarpool} key={4} />,
+    <RecapStep state={carpool} setState={setCarpool} key={4} />,
   ];
   return (
     <main className="grid place-items-center">
       <h1 className="text-4xl font-semibold my-6">Create new crapool</h1>
-      <StepperContextProvider maxStep={steps.length - 1}>
+      <StepperContextProvider maxStep={steps.length}>
         <Stepper submit={submit} steps={steps} />
       </StepperContextProvider>
     </main>

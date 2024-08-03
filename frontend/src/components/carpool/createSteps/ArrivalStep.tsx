@@ -1,5 +1,7 @@
 import { FormFieldProps } from "@/types/props";
 import StepForm from "./StepForm";
+import getTravelTime from "@/utils/getTravelTime";
+import { useEffect } from "react";
 
 export default function ArrivalStep({
   setState,
@@ -42,7 +44,6 @@ export default function ArrivalStep({
       placeAutoComplete: true,
     },
   ];
-
   return (
     <div className="min-w-full">
       <h1 className="font-semibold text-2xl text-center my-4">Arrival Step</h1>

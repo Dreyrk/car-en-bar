@@ -31,6 +31,10 @@ function extractAddress(place: google.maps.places.PlaceResult): Address {
       }
     }
   }
+  if (place.geometry) {
+    addressComponents.latitude = place.geometry.location?.lat();
+    addressComponents.longitude = place.geometry.location?.lng();
+  }
 
   return addressComponents;
 }

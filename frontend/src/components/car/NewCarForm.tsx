@@ -101,11 +101,11 @@ export default function NewCarForm() {
             <FormField
               control={form.control}
               name="year"
-              render={({ field: { value, ...fieldProps } }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>
                   <FormControl>
-                    <Input placeholder="2011" type="number" value={Number(value)} {...fieldProps} />
+                    <Input placeholder="2011" type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -127,11 +127,18 @@ export default function NewCarForm() {
             <FormField
               control={form.control}
               name="max_passengers"
-              render={({ field }) => (
+              render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
                   <FormLabel>Max Passengers</FormLabel>
                   <FormControl>
-                    <Input placeholder="2" type="number" {...field} />
+                    <Input
+                      placeholder="1"
+                      min={1}
+                      max={10}
+                      onChange={(e) => onChange(Number(e.target.value))}
+                      type="number"
+                      {...fieldProps}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
